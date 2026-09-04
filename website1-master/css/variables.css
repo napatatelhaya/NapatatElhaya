@@ -1,0 +1,35 @@
+:root {
+  /* درجات الأخضر - للطبيعة والفخامة */
+  --green-dark: #0d3b2e;
+  --green-mid: #1a5c47;
+  --green-light: #2d7a5f;
+  
+  /* درجات النحاسي والذهبي - للفت الانتباه والأزرار */
+  --copper: #b87333;
+  --copper-light: #d4956a;
+  --gold: #c9a227;
+  
+  /* ألوان الخلفيات والنصوص */
+  --cream: #f5f1e8;
+  --white: #ffffff;
+  --text-dark: #1a2e25;
+  --text-light: #5a6b62;
+  
+  /* إعدادات الخطوط والمسافات الأساسية */
+  --font-primary: 'Tajawal', sans-serif;
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  color: var(--text-dark);
+  background: var(--white);
+  line-height: 1.6;
+  /* تم حذف direction: rtl; من هنا ليعتمد المتصفح على dir="rtl" أو dir="ltr" في وسم HTML تلقائياً */
+}

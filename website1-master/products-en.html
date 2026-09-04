@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Products | Nabatat Elhaya</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=2.0">
+
+<style>
+  :root {
+    --green-dark: #0d3b2e;
+    --green-mid: #1a5c47;
+    --green-light: #2d7a5f;
+    --copper: #b87333;
+    --copper-light: #d4956a;
+    --gold: #c9a227;
+    --cream: #f5f1e8;
+    --white: #ffffff;
+    --text-dark: #1a2e25;
+    --text-light: #5a6b62;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  
+  body { font-family: 'Poppins', sans-serif; color: var(--text-dark); background: var(--cream); line-height: 1.6; overflow-x: hidden; }
+  h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+  /* HEADER */
+  header { position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; background: rgba(13, 59, 46, 0.95); backdrop-filter: blur(12px); padding: 18px 0; transition: all 0.3s ease; box-shadow: 0 2px 20px rgba(0,0,0,0.1); }
+  header.scrolled { padding: 12px 0; background: rgba(13, 59, 46, 0.98); }
+  
+  .nav-container { 
+    max-width: 1300px; 
+    margin: 0 auto; 
+    padding: 0 30px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 100%;
+  }
+  
+  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-icon { width: 45px; height: 45px; background: linear-gradient(135deg, var(--copper), var(--gold)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--white); box-shadow: 0 4px 15px rgba(184, 115, 51, 0.4); }
+  .logo-text { font-size: 24px; font-weight: 700; color: var(--white); letter-spacing: 0.5px; }
+  .logo-text span { color: var(--copper-light); }
+  
+  nav ul { display: flex; list-style: none; gap: 35px; align-items: center; }
+  nav a { color: var(--white); text-decoration: none; font-weight: 500; font-size: 15px; position: relative; padding: 5px 0; transition: color 0.3s ease; }
+  nav a::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 0; height: 2px; background: var(--copper); transition: width 0.3s ease; }
+  nav a:hover, nav a.active { color: var(--copper-light); }
+  nav a:hover::after, nav a.active::after { width: 100%; }
+  
+  .lang-btn {
+    color: var(--gold) !important;
+    font-weight: 700 !important;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+  }
+  .lang-btn::after { display: none !important; }
+  .lang-btn:hover { color: var(--copper-light) !important; transform: translateY(-2px); }
+
+  /* ===== زر قائمة الهاتف (Hamburger) ===== */
+  .mobile-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  .mobile-toggle span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--white);
+    border-radius: 3px;
+    transition: all 0.3s ease-in-out;
+  }
+  .mobile-toggle.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+  .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+  .mobile-toggle.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+  /* PAGE HEADER */
+  .page-header { background: linear-gradient(135deg, rgba(13, 59, 46, 0.9), rgba(13, 59, 46, 0.8)), url('https://image.qwenlm.ai/public_source/f925885c-9cf5-478e-a6f5-b6f34c2588bb/1a6e639e1-f6bf-43e1-8311-ee50d5f96330.png'); background-size: cover; background-position: center; padding: 150px 20px 80px; text-align: center; color: white; }
+  .page-header h1 { font-size: 48px; margin-bottom: 15px; color: var(--copper-light); }
+  .page-header p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+  /* FILTERS */
+  .filters { text-align: center; margin: 50px 0 30px; }
+  .filter-btn { background: transparent; border: 2px solid var(--copper); color: var(--green-dark); padding: 8px 25px; margin: 5px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: inherit; font-size: 15px; }
+  .filter-btn:hover, .filter-btn.active { background: var(--copper); color: var(--white); box-shadow: 0 5px 15px rgba(184, 115, 51, 0.3); transform: translateY(-2px); }
+
+  /* PRODUCTS GRID */
+  .container { max-width: 1300px; margin: 0 auto; padding: 0 30px 100px; }
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+  .product-card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(13, 59, 46, 0.08); transition: all 0.4s ease; cursor: pointer; }
+  .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(13, 59, 46, 0.15); }
+  .product-image { height: 260px; overflow: hidden; position: relative; background: var(--cream); }
+  .product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+  .product-card:hover .product-image img { transform: scale(1.1); }
+  .product-info { padding: 25px; }
+  .product-category { color: var(--copper); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .product-name { font-size: 22px; color: var(--green-dark); margin-bottom: 10px; font-family: 'Playfair Display', serif; font-weight: 700; }
+  .product-desc { color: var(--text-light); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+  .product-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 18px; border-top: 1px solid #eee; }
+  .product-origin { font-size: 13px; color: var(--text-light); }
+  .product-origin strong { color: var(--green-dark); }
+  .product-link { color: var(--copper); font-weight: 600; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: gap 0.3s ease; }
+  .product-link:hover { gap: 10px; }
+
+  /* FOOTER */
+  footer { background: #082419; color: var(--white); padding: 60px 0 25px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; max-width: 1300px; margin: 0 auto; padding: 0 30px; }
+  .footer-brand p { color: rgba(255,255,255,0.7); margin: 20px 0; font-size: 14px; line-height: 1.7; }
+  .footer-title { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: var(--copper-light); }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 12px; }
+  .footer-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; transition: color 0.3s ease; }
+  .footer-links a:hover { color: var(--copper-light); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; text-align: center; color: rgba(255,255,255,0.5); font-size: 13px; margin-top: 40px; }
+
+  /* ===== RESPONSIVE (التصحيح الجذري هنا) ===== */
+  @media (max-width: 968px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 768px) {
+    .mobile-toggle { display: flex; } 
+    
+    /* إخراج عنصر nav بالكامل من تدفق الصفحة لضمان عمل space-between بشكل مثالي */
+    #nav {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 75%;
+      max-width: 320px;
+      height: 100vh;
+      background: var(--green-dark);
+      z-index: 999;
+      transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+    }
+    #nav.active { left: 0; }
+    
+    #nav ul {
+      display: flex;
+      flex-direction: column;
+      padding: 100px 30px 30px;
+      gap: 25px;
+      list-style: none;
+      margin: 0;
+    }
+    #nav ul li { width: 100%; text-align: left; }
+    #nav a { font-size: 18px; display: block; padding: 10px 0; }
+    .lang-btn { justify-content: center; margin-top: 20px; font-size: 18px !important; }
+    
+    .footer-grid { grid-template-columns: 1fr; }
+
+  }
+  
+</style>
+</head>
+<body>
+
+<header id="mainHeader">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="bi bi-tree-fill"></i></div>
+           <div class="logo-text">Nabatat <span>Elhaya</span></div>
+
+        </a>
+        
+        <!-- زر البرجر منيو (موحد في كل الصفحات) -->
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+       <nav id="mainNav">
+    <ul id="navMenu">
+        <li><a href="en.html">Home</a></li>
+        <li class="dropdown">
+            <a href="products-en.html" class="active dropdown-toggle">Our Products <i class="bi bi-chevron-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="products-en.html?category=herbs">Herbs</a></li>
+                <li><a href="products-en.html?category=spices">Spices</a></li>
+                <li><a href="products-en.html?category=seeds">Seeds</a></li>
+            </ul>
+        </li>
+        <li><a href="about-en.html">About Us</a></li>
+        <li><a href="contact-en.html">Contact Us</a></li>
+        <!-- زر اللغة للعودة للعربية -->
+        <li><a href="products.html" id="langSwitcher" class="lang-btn"><i class="bi bi-globe"></i> <span id="langText">AR</span></a></li>
+    </ul>
+</nav>
+    </div>
+</header>
+<section class="page-header">
+  <h1>Premium Selection</h1>
+  <p>Discover our carefully curated range of high-quality herbs, spices, and seeds prepared for international export.</p>
+</section>
+
+<div class="filters">
+    <button class="filter-btn active" onclick="filterProducts('all')">All Products</button>
+    <button class="filter-btn" onclick="filterProducts('herbs')">Herbs</button>
+    <button class="filter-btn" onclick="filterProducts('spices')">Spices</button>
+    <button class="filter-btn" onclick="filterProducts('seeds')">Seeds</button>
+</div>
+
+<div class="container">
+    <div class="products-grid" id="products-container"></div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="en.html" class="logo">
+        <div class="logo-icon">🌿</div>
+        <div class="logo-text">Nabatat <span>Elhaya</span></div>
+      </a>
+      <p>Premium herbs exporter, delivering nature's finest products from our fertile lands to the world since 2010.</p>
+    </div>
+    <div>
+      <h4 class="footer-title">Quick Links</h4>
+      <ul class="footer-links">
+        <li><a href="en.html">Home</a></li>
+        <li><a href="products-en.html">Products</a></li>
+        <li><a href="en.html#about">About Us</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-title">Contact</h4>
+      <ul class="footer-links">
+        <li><a href="mailto:info@nabatat-elhaya.com">info@nabatat-elhaya.com</a></li>
+        <li><a href="tel:+201067131398">+20 106 713 1398</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Nabatat Elhaya. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // 1. تصحيح معرف الهيدر
+  const header = document.getElementById('mainHeader');
+  if (header) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+      });
+  }
+
+  // 2. تصحيح معرف القائمة (من 'nav' إلى 'mainNav')
+  const mobileToggle = document.getElementById('mobileToggle');
+  const mainNav = document.getElementById('mainNav'); 
+
+  if (mobileToggle && mainNav) {
+      // فتح وإغلاق القائمة
+      mobileToggle.addEventListener('click', () => {
+        mobileToggle.classList.toggle('active');
+        mainNav.classList.toggle('active');
+      });
+
+      // إغلاق القائمة عند النقر على أي رابط
+      document.querySelectorAll('#navMenu a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileToggle.classList.remove('active');
+          mainNav.classList.remove('active');
+        });
+      });
+  }
+</script>
+
+<script type="module" src="js/dataFetcher.js"></script>
+<script type="module" src="js/main.js"></script>   
+</body>
+</html>
+

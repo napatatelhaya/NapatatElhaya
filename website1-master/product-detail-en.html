@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Nabatat Elhaya</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        h1, h2, .section-title { font-family: 'Playfair Display', serif; }
+        .logo { flex-direction: row; }
+    </style>
+</head>
+<body>
+
+    <header id="mainHeader">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="bi bi-tree-fill"></i></div>
+            <div class="logo-text">Nabatat <span>Elhaya</span></div>
+        </a>
+        
+        <!-- زر البرجر منيو (موحد في كل الصفحات) -->
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav id="mainNav">
+            <ul id="navMenu">
+                <!-- ملاحظة: عدل الروابط في كل صفحة لتناسب الصفحة الحالية (active) -->
+                <li><a href="en.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="products-en.html" class="dropdown-toggle">Our Products <i class="bi bi-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="products-en.html?category=herbs">Herbs</a></li>
+                        <li><a href="products-en.html?category=spices">Spices</a></li>
+                        <li><a href="products-en.html?category=seeds">Seeds</a></li>
+                    </ul>
+                </li>
+                <li><a href="about-en.html">About Us</a></li>
+                <li><a href="contact-en.html">Contact Us</a></li>
+                <!-- زر اللغة الموحد -->
+                 <li>
+    <a href="product-detail.html" id="langSwitcher" class="lang-btn" onclick="this.href = this.href + window.location.search;">
+        <i class="bi bi-globe"></i> <span id="langText">AR</span>
+    </a>
+</li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+    <section class="product-detail-hero">
+        <div class="hero-content">
+            <span class="hero-tag fade-up">✦ Product Details ✦</span>
+            <h1 id="productTitle" class="fade-up fade-up-delay-1">Loading...</h1>
+        </div>
+    </section>
+
+    <div class="product-detail-container">
+        <div class="product-detail-grid">
+            <div class="product-detail-image fade-up">
+                <img id="productImage" src="" alt="Product Image">
+            </div>
+            
+            <div class="product-detail-info fade-up fade-up-delay-2">
+                <span id="productCategory" class="product-detail-category">-</span>
+                <h1 id="productName">-</h1>
+                <p id="productDescription" class="product-detail-description">-</p>
+                
+                <div class="product-detail-origin">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>Origin: <strong>Egypt</strong></span>
+                </div>
+                
+                <div class="product-detail-actions">
+                    <a id="whatsappLink" href="#" class="btn btn-primary" target="_blank">
+                        <i class="bi bi-whatsapp ms-2"></i> Inquire via WhatsApp
+                    </a>
+                    <a href="products-en.html" class="btn btn-outline" style="color: var(--green-dark); border-color: var(--green-dark);">
+                        <i class="bi bi-arrow-left ms-2"></i> Back to Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Nabatat Elhaya Export. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/201067131398" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTZfOOSxaWFlAc_smFxGKb3Sv3HH8tEAw",
+            authDomain: "napatatelhaya-98cb9.firebaseapp.com",
+            projectId: "napatatelhaya-98cb9",
+            storageBucket: "napatatelhaya-98cb9.firebasestorage.app",
+            messagingSenderId: "794316862369",
+            appId: "1:794316862369:web:592fF5ce4e867c97bc91e0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const docId = urlParams.get('id');
+
+        if (!docId) {
+            window.location.href = 'products-en.html';
+        }
+
+        async function loadProduct() {
+            try {
+                const productRef = doc(db, "products", docId);
+                const productSnap = await getDoc(productRef);
+
+                if (productSnap.exists()) {
+                    const product = productSnap.data();
+                    
+                    document.getElementById('productTitle').textContent = product.name.en;
+                    document.getElementById('productName').textContent = product.name.en;
+                    document.getElementById('productImage').src = product.image;
+                    document.getElementById('productDescription').textContent = product.description.en;
+                    
+                    const categories = { 'herbs': 'Herbs', 'spices': 'Spices', 'seeds': 'Seeds' };
+                    document.getElementById('productCategory').textContent = categories[product.category] || product.category;
+                    
+                    const whatsappMsg = `I would like to inquire about: ${product.name.en}`;
+                    document.getElementById('whatsappLink').href = `https://wa.me/201067131398?text=${encodeURIComponent(whatsappMsg)}`;
+                    
+                    document.title = `${product.name.en} | Nabatat Elhaya`;
+                } else {
+                    window.location.href = 'products-en.html';
+                }
+            } catch (error) {
+                console.error("Error loading product:", error);
+                window.location.href = 'products-en.html';
+            }
+        }
+
+        loadProduct();
+    </script>
+
+<script type="module" src="js/main.js"></script>    
+    
+
+</body>
+</html>

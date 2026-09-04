@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "Premium Peppermint",
+    "category": "Aromatic Herbs",
+    "description": "Fresh, fragrant peppermint leaves, perfect for medical and culinary use.",
+    "origin": "Egypt",
+    "image": "https://i.pinimg.com/1200x/63/72/89/6372898429373d4fdcd02753b616eae4.jpg",
+    "badge": "Best Seller"
+  },
+  {
+    "id": 2,
+    "name": "Wild Thyme",
+    "category": "Culinary Herbs",
+    "description": "Hand-picked wild thyme, featuring a strong earthy flavor rich in essential oils.",
+    "origin": "Egypt",
+    "image": "https://i.pinimg.com/736x/4d/b1/2d/4db12d01fa25acb45d0aabbf87476f53.jpg",
+    "badge": "Premium Quality"
+  },
+  {
+    "id": 3,
+    "name": "Chamomile Flowers",
+    "category": "Floral Herbs",
+    "description": "Carefully sun-dried chamomile flowers, perfect for soothing beverages.",
+    "origin": "Egypt",
+    "image": "https://i.pinimg.com/736x/a9/0f/ab/a90fab9ec46863887a26d155bc5ad10b.jpg",
+    "badge": "Organic"
+  }
+]

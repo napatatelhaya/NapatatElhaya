@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة | نباتات الحياة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root { --green-dark: #082419; --green-mid: #0d3b2e; --copper: #b87333; --copper-light: #d4956a; --cream: #f4f4f6; --white: #ffffff; --text-dark: #333333; --text-muted: #888888; --danger: #dc3545; --success: #28a745; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--cream); margin: 0; padding: 0; color: var(--text-dark); }
+        .app-container { max-width: 700px; margin: 0 auto; min-height: 100vh; padding: 20px; }
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page-header { display: flex; align-items: center; margin-bottom: 25px; margin-top: 15px; position: relative; }
+        .back-btn { background: none; border: none; font-size: 24px; color: var(--copper); cursor: pointer; padding: 5px; display: flex; align-items: center; }
+        .page-title { flex-grow: 1; text-align: center; font-size: 22px; font-weight: 700; color: var(--green-dark); margin: 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--white); padding: 20px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); text-align: center; }
+        .stat-icon { font-size: 28px; color: var(--copper); margin-bottom: 8px; }
+        .stat-number { font-size: 28px; font-weight: 900; color: var(--green-dark); margin: 5px 0; }
+        .stat-label { font-size: 13px; color: var(--text-muted); }
+        .menu-group { background-color: var(--white); border-radius: 16px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .menu-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background-color: #fafafa; }
+        .menu-content { display: flex; align-items: center; gap: 15px; }
+        .menu-icon { font-size: 20px; color: var(--copper); background: rgba(184, 115, 51, 0.1); width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
+        .menu-text { font-size: 15px; font-weight: 500; }
+        .menu-subtext { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .arrow-icon { color: #ccc; font-size: 18px; }
+        .badge { background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-right: 8px; }
+        .form-card { background: var(--white); padding: 25px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--green-mid); }
+        input[type="text"], input[type="password"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"], textarea, select, input[type="file"] { width: 100%; padding: 12px 15px; border: 1px solid #e0e0e0; border-radius: 10px; font-family: 'Tajawal', sans-serif; font-size: 15px; background-color: #fafafa; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--copper); background: #fff; }
+        textarea { resize: vertical; min-height: 80px; }
+        .btn-primary { background-color: var(--copper); color: #fff; border: none; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; transition: background 0.3s; margin-top: 10px; }
+        .btn-primary:hover { background-color: #9a5e27; }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-secondary { background-color: var(--green-mid); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.3s; text-decoration: none; text-align: center; display: inline-block;}
+        .btn-secondary:hover { background-color: var(--green-dark); }
+        .btn-danger { background-color: var(--danger); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .btn-danger:hover { background-color: #b02a37; }
+        .btn-outline { background: transparent; color: var(--copper); border: 1px solid var(--copper); padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .login-wrapper { display: flex; flex-direction: column; justify-content: center; min-height: 80vh; }
+        .login-logo { text-align: center; font-size: 60px; margin-bottom: 10px; }
+        .product-item { background: var(--white); padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .product-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+        .product-item-info { flex-grow: 1; }
+        .product-item-name { font-weight: 700; color: var(--green-dark); font-size: 15px; }
+        .product-item-cat { font-size: 12px; color: var(--text-muted); }
+        .product-item-actions { display: flex; gap: 8px; }
+        .alert { padding: 14px; border-radius: 10px; margin-bottom: 15px; font-weight: 500; font-size: 14px; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .logo-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--copper); margin: 10px auto; display: block; background: #eee; }
+        .hero-preview { width: 100%; height: 150px; border-radius: 12px; object-fit: cover; margin-top: 10px; border: 2px solid #eee; background: #eee; }
+        input[type="range"] { width: 100%; accent-color: var(--copper); }
+        .range-value { display: inline-block; background: var(--copper); color: white; padding: 3px 10px; border-radius: 12px; font-size: 13px; margin-right: 10px; }
+        .inquiry-item { background: var(--white); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-right: 4px solid var(--copper); }
+        .inquiry-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .inquiry-name { font-weight: 700; color: var(--green-dark); }
+        .inquiry-date { font-size: 12px; color: var(--text-muted); }
+        .inquiry-message { font-size: 14px; color: var(--text-dark); line-height: 1.6; margin: 8px 0; }
+        .inquiry-contact { font-size: 13px; color: var(--text-muted); }
+        .section-divider { height: 1px; background: #eee; margin: 20px 0; }
+        .quick-actions { display: flex; gap: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div id="loginView" class="view-section active">
+        <div class="login-wrapper">
+            <div class="login-logo">🌿</div>
+            <h2 style="text-align: center; color: var(--green-dark); margin-bottom: 30px;">إدارة نباتات الحياة</h2>
+            <div class="form-card">
+                <form id="loginForm">
+                    <div class="form-group"><label>كلمة المرور</label><input type="password" id="adminPassword" required placeholder="أدخل كلمة المرور..."></div>
+                    <button type="submit" class="btn-primary">تسجيل الدخول</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboardView" class="view-section">
+        <div class="page-header"><h1 class="page-title">لوحة التحكم</h1><button class="back-btn" onclick="logout()" title="خروج"><i class="bi bi-box-arrow-right"></i></button></div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon"><i class="bi bi-box-seam-fill"></i></div><div class="stat-number" id="statProducts">0</div><div class="stat-label">منتج نشط</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="bi bi-envelope-fill"></i></div><div class="stat-number" id="statInquiries">0</div><div class="stat-label">طلب وارد</div></div>
+        </div>
+        <div class="menu-group">
+            <div class="menu-item" onclick="switchView('productsListView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-box-seam"></i></div><div><div class="menu-text">إدارة المنتجات</div><div class="menu-subtext">إضافة، تعديل، حذف</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
+            <div class="menu-item" onclick="switchView('companyView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-building"></i></div><div><div class="menu-text">هوية الشركة</div><div class="menu-subtext">اللوجو، الاسم، التواصل</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
+            <div class="menu-item" onclick="switchView('heroView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-image"></i></div><div><div class="menu-text">Hero Banner</div><div class="menu-subtext">صور وعناوين الصفحات</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
+            <div class="menu-item" onclick="switchView('hoursView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-clock"></i></div><div><div class="menu-text">ساعات العمل</div><div class="menu-subtext">أيام وساعات العمل</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
+            <div class="menu-item" onclick="switchView('aboutView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-info-circle"></i></div><div><div class="menu-text">من نحن</div><div class="menu-subtext">الرؤية والرسالة</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
+            <div class="menu-item" onclick="switchView('inquiriesView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-envelope-paper"></i></div><div><div class="menu-text">الطلبات الواردة <span class="badge" id="inquiriesBadge">0</span></div><div class="menu-subtext">رسائل نموذج الاتصال</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
+        </div>
+        <div class="quick-actions"><a href="../index.html" target="_blank" class="btn-secondary"><i class="bi bi-eye"></i> معاينة الموقع</a></div>
+    </div>
+
+    <div id="productsListView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">المنتجات</h1></div>
+        <button class="btn-primary" onclick="switchView('addProductView')" style="margin-bottom: 20px;"><i class="bi bi-plus-lg"></i> إضافة منتج جديد</button>
+        <div id="productsListContainer"></div>
+    </div>
+
+    <div id="addProductView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('productsListView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title" id="productFormTitle">إضافة منتج</h1></div>
+        <div class="form-card">
+            <div id="productAlert"></div>
+            <form id="addProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group"><label>اسم المنتج (عربي)</label><input type="text" id="prodNameAr" required></div>
+                <div class="form-group"><label>Product Name (English)</label><input type="text" id="prodNameEn" required></div>
+                <div class="form-group"><label>القسم / Category</label><select id="prodCategory" required><option value="herbs">أعشاب / Herbs</option><option value="spices">توابل / Spices</option><option value="seeds">بذور / Seeds</option></select></div>
+                <div class="form-group"><label>الوصف (عربي)</label><textarea id="prodDescAr" rows="3" required></textarea></div>
+                <div class="form-group"><label>Description (English)</label><textarea id="prodDescEn" rows="3" required></textarea></div>
+                <div class="form-group"><label>صورة المنتج</label><input type="file" id="prodImage" accept="image/*"><small style="color: var(--text-muted);">اتركها فارغة عند التعديل للإبقاء على الصورة الحالية</small></div>
+                <button type="submit" id="submitBtn" class="btn-primary"><i class="bi bi-cloud-arrow-up"></i> حفظ ونشر</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="companyView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">هوية الشركة</h1></div>
+        <div class="form-card">
+            <div id="companyAlert"></div>
+            <form id="companyForm">
+                <div class="form-group" style="text-align: center;"><label>لوجو الشركة</label><img id="logoPreview" class="logo-preview" src="" alt="Logo"><input type="file" id="companyLogo" accept="image/*"></div>
+                <div class="form-group"><label>اسم الشركة (عربي)</label><input type="text" id="companyNameAr" required></div>
+                <div class="form-group"><label>Company Name (English)</label><input type="text" id="companyNameEn" required></div>
+                <div class="section-divider"></div>
+                <h3 style="color: var(--green-dark); margin-bottom: 15px; font-size: 16px;"><i class="bi bi-telephone"></i> بيانات التواصل</h3>
+                <div class="form-group"><label>رقم واتساب الرئيسي (مع كود الدولة)</label><input type="tel" id="whatsappMain" placeholder="201067131398" required></div>
+                <div class="form-group"><label>رقم واتساب ثانوي (اختياري)</label><input type="tel" id="whatsappSecondary" placeholder="201096413175"></div>
+                <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="companyEmail" required></div>
+                <div class="form-group"><label>العنوان (عربي)</label><input type="text" id="companyAddressAr" required></div>
+                <div class="form-group"><label>Address (English)</label><input type="text" id="companyAddressEn" required></div>
+                <div class="section-divider"></div>
+                <h3 style="color: var(--green-dark); margin-bottom: 15px; font-size: 16px;"><i class="bi bi-share"></i> التواصل الاجتماعي</h3>
+                <div class="form-group"><label>فيسبوك (URL)</label><input type="url" id="socialFacebook" placeholder="https://facebook.com/..."></div>
+                <div class="form-group"><label>إنستجرام (URL)</label><input type="url" id="socialInstagram" placeholder="https://instagram.com/..."></div>
+                <div class="form-group"><label>لينكدإن (URL)</label><input type="url" id="socialLinkedin" placeholder="https://linkedin.com/..."></div>
+                <button type="submit" class="btn-primary"><i class="bi bi-check-lg"></i> حفظ التغييرات</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="heroView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">Hero Banner</h1></div>
+        <div class="form-card">
+            <div id="heroAlert"></div>
+            <div class="form-group"><label>اختر الصفحة</label><select id="heroPageSelect" onchange="loadHeroData()"><option value="hero_home">الصفحة الرئيسية</option><option value="hero_products">صفحة المنتجات</option><option value="hero_about">صفحة من نحن</option><option value="hero_contact">صفحة اتصل بنا</option></select></div>
+            <form id="heroForm">
+                <div class="form-group"><label>صورة الخلفية</label><img id="heroImagePreview" class="hero-preview" src="" alt="Hero"><input type="file" id="heroImage" accept="image/*"></div>
+                <div class="form-group"><label>درجة الشفافية (Opacity): <span class="range-value" id="opacityValue">0.85</span></label><input type="range" id="heroOpacity" min="0" max="1" step="0.05" value="0.85" oninput="document.getElementById('opacityValue').textContent = this.value"></div>
+                <div class="form-group"><label>العنوان الرئيسي (عربي)</label><input type="text" id="heroTitleAr" required></div>
+                <div class="form-group"><label>Main Title (English)</label><input type="text" id="heroTitleEn" required></div>
+                <div class="form-group"><label>الوصف (عربي)</label><textarea id="heroSubtitleAr" rows="2"></textarea></div>
+                <div class="form-group"><label>Subtitle (English)</label><textarea id="heroSubtitleEn" rows="2"></textarea></div>
+                <button type="submit" class="btn-primary"><i class="bi bi-check-lg"></i> حفظ Hero</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="hoursView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">ساعات العمل</h1></div>
+        <div class="form-card">
+            <div id="hoursAlert"></div>
+            <form id="hoursForm">
+                <div class="form-group"><label>الأحد - الخميس</label><input type="text" id="hoursWeekdays" placeholder="9:00 AM - 6:00 PM" required></div>
+                <div class="form-group"><label>السبت</label><input type="text" id="hoursSaturday" placeholder="9:00 AM - 2:00 PM" required></div>
+                <div class="form-group"><label>الجمعة</label><input type="text" id="hoursFriday" placeholder="مغلق / Closed" required></div>
+                <button type="submit" class="btn-primary"><i class="bi bi-check-lg"></i> حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="aboutView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">من نحن</h1></div>
+        <div class="form-card">
+            <div id="aboutAlert"></div>
+            <form id="aboutForm">
+                <h3 style="color: var(--green-dark); margin-bottom: 15px; font-size: 16px;">الرؤية / Vision</h3>
+                <div class="form-group"><label>الرؤية (عربي)</label><textarea id="visionAr" rows="3" required></textarea></div>
+                <div class="form-group"><label>Vision (English)</label><textarea id="visionEn" rows="3" required></textarea></div>
+                <div class="section-divider"></div>
+                <h3 style="color: var(--green-dark); margin-bottom: 15px; font-size: 16px;">الرسالة / Mission</h3>
+                <div class="form-group"><label>الرسالة (عربي)</label><textarea id="missionAr" rows="3" required></textarea></div>
+                <div class="form-group"><label>Mission (English)</label><textarea id="missionEn" rows="3" required></textarea></div>
+                <button type="submit" class="btn-primary"><i class="bi bi-check-lg"></i> حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="inquiriesView" class="view-section">
+        <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">الطلبات الواردة</h1></div>
+        <div id="inquiriesListContainer"></div>
+    </div>
+</div>
+
+<script type="module">
+    // ✅ تم إضافة setDoc هنا لإصلاح مشكلة الحفظ
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTZfOOSxaWFlAc_smFxGKb3Sv3HH8tEAw",
+        authDomain: "napatatelhaya-98cb9.firebaseapp.com",
+        projectId: "napatatelhaya-98cb9",
+        storageBucket: "napatatelhaya-98cb9.firebasestorage.app",
+        messagingSenderId: "794316862369",
+        appId: "1:794316862369:web:592fF5ce4e867c97bc91e0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const IMGBB_API_KEY = '0ec6aadd9fe8bc68bdbe45aee860ce45';
+
+    window.switchView = function(viewId) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (viewId === 'dashboardView') loadDashboard();
+        if (viewId === 'productsListView') loadProductsList();
+        if (viewId === 'companyView') loadCompanyData();
+        if (viewId === 'heroView') loadHeroData();
+        if (viewId === 'hoursView') loadHoursData();
+        if (viewId === 'aboutView') loadAboutData();
+        if (viewId === 'inquiriesView') loadInquiries();
+        if (viewId === 'addProductView' && !document.getElementById('editProductId').value) {
+            document.getElementById('addProductForm').reset();
+            document.getElementById('productFormTitle').textContent = 'إضافة منتج';
+        }
+    };
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (document.getElementById('adminPassword').value === 'admin2026') {
+            sessionStorage.setItem('admin_logged', 'true');
+            window.switchView('dashboardView');
+        } else { alert('كلمة المرور غير صحيحة'); }
+    });
+
+    window.logout = function() {
+        sessionStorage.removeItem('admin_logged');
+        document.getElementById('adminPassword').value = '';
+        window.switchView('loginView');
+    };
+
+    if (sessionStorage.getItem('admin_logged') === 'true') window.switchView('dashboardView');
+
+    async function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+        const result = await res.json();
+        if (!result.success) throw new Error('فشل رفع الصورة');
+        return result.data.url;
+    }
+
+    async function loadDashboard() {
+        try {
+            const productsSnap = await getDocs(collection(db, 'products'));
+            const inquiriesSnap = await getDocs(collection(db, 'inquiries'));
+            document.getElementById('statProducts').textContent = productsSnap.size;
+            document.getElementById('statInquiries').textContent = inquiriesSnap.size;
+            document.getElementById('inquiriesBadge').textContent = inquiriesSnap.size;
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadProductsList() {
+        const container = document.getElementById('productsListContainer');
+        container.innerHTML = '<div class="alert alert-info">جاري التحميل...</div>';
+        try {
+            const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            if (snap.empty) { container.innerHTML = '<div class="alert alert-info">لا توجد منتجات بعد.</div>'; return; }
+            container.innerHTML = '';
+            snap.forEach(docSnap => {
+                const p = docSnap.data();
+                const div = document.createElement('div');
+                div.className = 'product-item';
+                div.innerHTML = `<img src="${p.image}" alt="${p.name.ar}"><div class="product-item-info"><div class="product-item-name">${p.name.ar}</div><div class="product-item-cat">${p.category} • ${p.name.en}</div></div><div class="product-item-actions"><button class="btn-outline" onclick="editProduct('${docSnap.id}')"><i class="bi bi-pencil"></i></button><button class="btn-danger" onclick="deleteProduct('${docSnap.id}', '${p.name.ar}')"><i class="bi bi-trash"></i></button></div>`;
+                container.appendChild(div);
+            });
+        } catch (e) { container.innerHTML = '<div class="alert alert-danger">خطأ في التحميل</div>'; }
+    }
+
+    window.editProduct = async function(id) {
+        try {
+            const snap = await getDoc(doc(db, 'products', id));
+            const p = snap.data();
+            document.getElementById('editProductId').value = id;
+            document.getElementById('prodNameAr').value = p.name.ar;
+            document.getElementById('prodNameEn').value = p.name.en;
+            document.getElementById('prodCategory').value = p.category;
+            document.getElementById('prodDescAr').value = p.description.ar;
+            document.getElementById('prodDescEn').value = p.description.en;
+            document.getElementById('productFormTitle').textContent = 'تعديل منتج';
+            window.switchView('addProductView');
+        } catch (e) { alert('خطأ'); }
+    };
+
+    window.deleteProduct = async function(id, name) {
+        if (!confirm(`هل أنت متأكد من حذف "${name}"؟`)) return;
+        try { await deleteDoc(doc(db, 'products', id)); alert('تم الحذف بنجاح'); loadProductsList(); } catch (e) { alert('خطأ في الحذف'); }
+    };
+
+    document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const editId = document.getElementById('editProductId').value;
+        const imageFile = document.getElementById('prodImage').files[0];
+        btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الحفظ...';
+        try {
+            let imageUrl = null;
+            if (imageFile) imageUrl = await uploadImage(imageFile);
+            else if (!editId) throw new Error('الرجاء اختيار صورة للمنتج الجديد');
+            
+            const data = {
+                category: document.getElementById('prodCategory').value,
+                name: { ar: document.getElementById('prodNameAr').value, en: document.getElementById('prodNameEn').value },
+                description: { ar: document.getElementById('prodDescAr').value, en: document.getElementById('prodDescEn').value }
+            };
+            if (imageUrl) data.image = imageUrl;
+            if (!editId) data.createdAt = serverTimestamp();
+            
+            if (editId) {
+                await updateDoc(doc(db, 'products', editId), data);
+                document.getElementById('productAlert').innerHTML = '<div class="alert alert-success">تم التعديل بنجاح!</div>';
+            } else {
+                await addDoc(collection(db, 'products'), data);
+                document.getElementById('productAlert').innerHTML = '<div class="alert alert-success">تمت الإضافة بنجاح!</div>';
+            }
+            document.getElementById('editProductId').value = '';
+            document.getElementById('addProductForm').reset();
+            document.getElementById('productFormTitle').textContent = 'إضافة منتج';
+            setTimeout(() => { document.getElementById('productAlert').innerHTML = ''; }, 3000);
+        } catch (err) {
+            document.getElementById('productAlert').innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+        } finally {
+            btn.disabled = false; btn.innerHTML = '<i class="bi bi-cloud-arrow-up"></i> حفظ ونشر';
+        }
+    });
+
+    async function loadCompanyData() {
+        try {
+            const snap = await getDoc(doc(db, 'settings', 'general'));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('logoPreview').src = d.logo || '';
+                document.getElementById('companyNameAr').value = d.companyNameAr || '';
+                document.getElementById('companyNameEn').value = d.companyNameEn || '';
+                document.getElementById('whatsappMain').value = d.whatsappMain || '';
+                document.getElementById('whatsappSecondary').value = d.whatsappSecondary || '';
+                document.getElementById('companyEmail').value = d.email || '';
+                document.getElementById('companyAddressAr').value = d.addressAr || '';
+                document.getElementById('companyAddressEn').value = d.addressEn || '';
+                document.getElementById('socialFacebook').value = d.social?.facebook || '';
+                document.getElementById('socialInstagram').value = d.social?.instagram || '';
+                document.getElementById('socialLinkedin').value = d.social?.linkedin || '';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    // ✅ الإصلاح الجذري هنا: استخدام setDoc مع merge: true
+    document.getElementById('companyForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+            const logoFile = document.getElementById('companyLogo').files[0];
+            let logoUrl = document.getElementById('logoPreview').src;
+            if (logoFile) {
+                document.getElementById('companyAlert').innerHTML = '<div class="alert alert-info">جاري رفع اللوجو...</div>';
+                logoUrl = await uploadImage(logoFile);
+                document.getElementById('logoPreview').src = logoUrl;
+            }
+            
+            const data = {
+                logo: logoUrl,
+                companyNameAr: document.getElementById('companyNameAr').value,
+                companyNameEn: document.getElementById('companyNameEn').value,
+                whatsappMain: document.getElementById('whatsappMain').value,
+                whatsappSecondary: document.getElementById('whatsappSecondary').value,
+                email: document.getElementById('companyEmail').value,
+                addressAr: document.getElementById('companyAddressAr').value,
+                addressEn: document.getElementById('companyAddressEn').value,
+                social: { facebook: document.getElementById('socialFacebook').value, instagram: document.getElementById('socialInstagram').value, linkedin: document.getElementById('socialLinkedin').value },
+                updatedAt: serverTimestamp()
+            };
+            
+            // هذا السطر هو الحل السحري: ينشئ المستند باسم 'general' إذا لم يكن موجوداً، أو يحدّثه إذا كان موجوداً
+            await setDoc(doc(db, 'settings', 'general'), data, { merge: true });
+            
+            document.getElementById('companyAlert').innerHTML = '<div class="alert alert-success">✅ تم حفظ هوية الشركة واللوجو بنجاح!</div>';
+            setTimeout(() => { document.getElementById('companyAlert').innerHTML = ''; }, 3000);
+        } catch (err) {
+            document.getElementById('companyAlert').innerHTML = `<div class="alert alert-danger">❌ خطأ: ${err.message}</div>`;
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    async function loadHeroData() {
+        const page = document.getElementById('heroPageSelect').value;
+        try {
+            const snap = await getDoc(doc(db, 'settings', page));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('heroImagePreview').src = d.image || '';
+                document.getElementById('heroOpacity').value = d.opacity || 0.85;
+                document.getElementById('opacityValue').textContent = d.opacity || 0.85;
+                document.getElementById('heroTitleAr').value = d.titleAr || '';
+                document.getElementById('heroTitleEn').value = d.titleEn || '';
+                document.getElementById('heroSubtitleAr').value = d.subtitleAr || '';
+                document.getElementById('heroSubtitleEn').value = d.subtitleEn || '';
+            } else {
+                document.getElementById('heroImagePreview').src = '';
+                document.getElementById('heroTitleAr').value = '';
+                document.getElementById('heroTitleEn').value = '';
+                document.getElementById('heroSubtitleAr').value = '';
+                document.getElementById('heroSubtitleEn').value = '';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    document.getElementById('heroForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+            const page = document.getElementById('heroPageSelect').value;
+            const imageFile = document.getElementById('heroImage').files[0];
+            let imageUrl = document.getElementById('heroImagePreview').src;
+            if (imageFile) imageUrl = await uploadImage(imageFile);
+            
+            const data = { image: imageUrl, opacity: parseFloat(document.getElementById('heroOpacity').value), titleAr: document.getElementById('heroTitleAr').value, titleEn: document.getElementById('heroTitleEn').value, subtitleAr: document.getElementById('heroSubtitleAr').value, subtitleEn: document.getElementById('heroSubtitleEn').value, updatedAt: serverTimestamp() };
+            await setDoc(doc(db, 'settings', page), data, { merge: true });
+            
+            document.getElementById('heroImagePreview').src = imageUrl;
+            document.getElementById('heroAlert').innerHTML = '<div class="alert alert-success">تم حفظ Hero بنجاح!</div>';
+            setTimeout(() => { document.getElementById('heroAlert').innerHTML = ''; }, 3000);
+        } catch (err) {
+            document.getElementById('heroAlert').innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+        } finally { btn.disabled = false; }
+    });
+
+    async function loadHoursData() {
+        try {
+            const snap = await getDoc(doc(db, 'settings', 'business_hours'));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('hoursWeekdays').value = d.weekdays || '';
+                document.getElementById('hoursSaturday').value = d.saturday || '';
+                document.getElementById('hoursFriday').value = d.friday || '';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    document.getElementById('hoursForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+            const data = { weekdays: document.getElementById('hoursWeekdays').value, saturday: document.getElementById('hoursSaturday').value, friday: document.getElementById('hoursFriday').value, updatedAt: serverTimestamp() };
+            await setDoc(doc(db, 'settings', 'business_hours'), data, { merge: true });
+            document.getElementById('hoursAlert').innerHTML = '<div class="alert alert-success">تم الحفظ!</div>';
+            setTimeout(() => { document.getElementById('hoursAlert').innerHTML = ''; }, 3000);
+        } catch (err) {
+            document.getElementById('hoursAlert').innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+        } finally { btn.disabled = false; }
+    });
+
+    async function loadAboutData() {
+        try {
+            const snap = await getDoc(doc(db, 'settings', 'about_us'));
+            if (snap.exists()) {
+                const d = snap.data();
+                document.getElementById('visionAr').value = d.visionAr || '';
+                document.getElementById('visionEn').value = d.visionEn || '';
+                document.getElementById('missionAr').value = d.missionAr || '';
+                document.getElementById('missionEn').value = d.missionEn || '';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    document.getElementById('aboutForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+            const data = { visionAr: document.getElementById('visionAr').value, visionEn: document.getElementById('visionEn').value, missionAr: document.getElementById('missionAr').value, missionEn: document.getElementById('missionEn').value, updatedAt: serverTimestamp() };
+            await setDoc(doc(db, 'settings', 'about_us'), data, { merge: true });
+            document.getElementById('aboutAlert').innerHTML = '<div class="alert alert-success">تم الحفظ!</div>';
+            setTimeout(() => { document.getElementById('aboutAlert').innerHTML = ''; }, 3000);
+        } catch (err) {
+            document.getElementById('aboutAlert').innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+        } finally { btn.disabled = false; }
+    });
+
+    async function loadInquiries() {
+        const container = document.getElementById('inquiriesListContainer');
+        container.innerHTML = '<div class="alert alert-info">جاري التحميل...</div>';
+        try {
+            const q = query(collection(db, 'inquiries'), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            if (snap.empty) { container.innerHTML = '<div class="alert alert-info">لا توجد طلبات واردة.</div>'; return; }
+            container.innerHTML = '';
+            snap.forEach(docSnap => {
+                const d = docSnap.data();
+                const date = d.createdAt ? new Date(d.createdAt.toDate()).toLocaleString('ar-EG') : '';
+                const div = document.createElement('div');
+                div.className = 'inquiry-item';
+                div.innerHTML = `<div class="inquiry-header"><span class="inquiry-name">${d.name || 'بدون اسم'}</span><span class="inquiry-date">${date}</span></div><div class="inquiry-contact"><i class="bi bi-envelope"></i> ${d.email || '-'} ${d.phone ? `• <i class="bi bi-telephone"></i> ${d.phone}` : ''}</div><div class="inquiry-message">${d.message || ''}</div><div style="display: flex; gap: 8px; margin-top: 10px;"><a href="mailto:${d.email}" class="btn-outline" style="text-decoration: none;"><i class="bi bi-reply"></i> رد</a><button class="btn-danger" onclick="deleteInquiry('${docSnap.id}')"><i class="bi bi-trash"></i> حذف</button></div>`;
+                container.appendChild(div);
+            });
+        } catch (e) { container.innerHTML = '<div class="alert alert-danger">خطأ في التحميل</div>'; }
+    }
+
+    window.deleteInquiry = async function(id) {
+        if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
+        try { await deleteDoc(doc(db, 'inquiries', id)); loadInquiries(); } catch (e) { alert('خطأ'); }
+    };
+</script>
+</body>
+</html>

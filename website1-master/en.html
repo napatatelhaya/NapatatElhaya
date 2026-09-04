@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Nabatat Elhaya - Exporting the finest natural and medical herbs from Egypt to the world.">
+    <title>Nabatat Elhaya - Premium Herbs Export</title>
+    
+    <!-- مكتبة Bootstrap Icons الاحترافية -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- أيقونة الموقع (Favicon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+    
+    <!-- خطوط جوجل (إنجليزية) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- ملفات التنسيق -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- تعديل خط الصفحة الإنجليزية -->
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        h1, h2, .section-title { font-family: 'Playfair Display', serif; }
+        .logo { flex-direction: row; }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر (Header) -->
+   <header id="mainHeader">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="bi bi-tree-fill"></i></div>
+            <div class="logo-text">Nabatat <span>Elhaya</span></div>
+        </a>
+        
+        <!-- زر البرجر منيو (موحد في كل الصفحات) -->
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav id="mainNav">
+            <ul id="navMenu">
+                <!-- ملاحظة: عدل الروابط في كل صفحة لتناسب الصفحة الحالية (active) -->
+                <li><a href="en.html" class="active" >Home</a></li>
+                <li class="dropdown">
+                    <a href="products-en.html" class="dropdown-toggle">Our Products <i class="bi bi-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="products-en.html?category=herbs">Herbs</a></li>
+                        <li><a href="products-en.html?category=spices">Spices</a></li>
+                        <li><a href="products-en.html?category=seeds">Seeds</a></li>
+                    </ul>
+                </li>
+                <li><a href="about-en.html">About Us</a></li>
+                <li><a href="contact-en.html">Contact Us</a></li>
+                <!-- زر اللغة الموحد -->
+                <li><a href="index.html" id="langSwitcher" class="lang-btn"><i class="bi bi-globe"></i> <span id="langText">AR</span></a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+    <!-- القسم الرئيسي (Hero Section) -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <span class="hero-tag">✦ Premium Herbs Export ✦</span>
+            <h1>Nature's Finest <span class="accent">Herbs</span><br>Delivered Worldwide</h1>
+            <p>From our fertile lands to your doorstep — we export the purest, carefully selected herbs, harvested sustainably for global markets.</p>
+            
+            <div class="hero-buttons">
+                <a href="products-en.html" class="btn btn-primary">Explore Products <i class="bi bi-arrow-right ms-2"></i></a>
+                <a href="contact-en.html" class="btn btn-outline">Get in Touch</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم المنتجات -->
+    <section class="products">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-tag">Our Collection</span>
+                <h2 class="section-title">Premium <span class="accent">Herbs</span> Selection</h2>
+                <p class="section-subtitle">Discover our carefully curated range of high-quality herbs, ready for international export.</p>
+            </div>
+            <div class="products-grid" id="products-container">
+                <p>Loading products...</p>
+            </div>
+            <!-- زر لعرض باقي المنتجات -->
+            <div style="text-align: center; margin-top: 40px;" class="fade-up">
+                <a href="products-en.html" class="btn btn-primary">View All Products <i class="bi bi-grid ms-2"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم من نحن -->
+    <section class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content fade-up">
+                    <span class="section-tag">Our Story</span>
+                    <h2 class="section-title">Rooted in <span class="accent">Nature</span>, Grown with Care</h2>
+                    <p class="about-text">At "Nabatat Elhaya", we take pride in being the bridge between Egypt's fertile lands and global markets. We have been exporting the finest natural and medical herbs for years, fully committed to quality and sustainability standards.</p>
+                    <ul class="about-features">
+                        <li><i class="bi bi-check-circle-fill"></i> Sustainable, pesticide-free farming</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Export quality matching European standards</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Commitment to deadlines and bulk supply</li>
+                    </ul>
+                    <a href="about-en.html" class="btn btn-outline" style="margin-top: 20px; color: var(--green-dark); border-color: var(--green-dark);">Read Our Full Story</a>
+                </div>
+                <div class="about-image fade-up">
+                    <img src="https://i.pinimg.com/1200x/62/24/b3/6224b386b62d80e6671f2eb2c30d2c75.jpg" alt="About Us">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم اتصل بنا -->
+    <section class="contact">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-tag" style="color: var(--copper-light);">Quick Contact</span>
+                <h2 class="section-title">Let's Start a <span class="accent">Partnership</span></h2>
+                <p class="section-subtitlef">We are ready to fulfill your export requests and provide the best quotations.</p>
+            </div>
+            <div class="contact-grid">
+                
+                <div class="contact-info fade-up">
+                    <div class="contact-item">
+                        <i class="bi bi-geo-alt-fill contact-icon"></i> 
+                        <span>Location: Cairo, Egypt</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="bi bi-envelope-fill contact-icon"></i> 
+                        <span>Email: 
+                            <a href="mailto:alsayed0852.as@gmail.com">alsayed0852.as@gmail.com</a>
+                        </span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="bi bi-whatsapp contact-icon"></i> 
+                        <span>Phone/WhatsApp: 
+                            <div class="phone-numbers">
+                                <a href="tel:+201067131398">+20 106 713 1398</a>
+                                <a href="tel:+201096413175">+20 109 641 3175</a>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                
+                <form class="contact-form fade-up" id="contactForm">
+                    <input type="text" id="clientName" placeholder="Name or Company" required>
+                    <input type="email" id="clientEmail" placeholder="Email Address" required>
+                    <textarea id="clientMessage" placeholder="Your message or order details..." required rows="5"></textarea>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill ms-2"></i> Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+      <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Nabatat Elhaya Export. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- زر الواتساب العائم -->
+    <a href="https://wa.me/201067131398" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <!-- استدعاء ملفات الجافاسكريبت (تم إضافة type="module" هنا) -->
+    <script type="module" src="js/dataFetcher.js"></script>
+<script type="module" src="js/main.js"></script>    
+</body>
+</html>

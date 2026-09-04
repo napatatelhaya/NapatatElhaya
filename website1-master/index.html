@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="نباتات الحياة - تصدير أجود الأعشاب الطبيعية والطبية من مصر إلى جميع أنحاء العالم.">
+    <title>نباتات الحياة - لتصدير الأعشاب الفاخرة</title>
+    
+    <!-- مكتبة Bootstrap Icons الاحترافية -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- أيقونة الموقع (Favicon) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+    
+    <!-- خطوط جوجل (Tajawal) -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- ملفات التنسيق -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- الهيدر (Header) -->
+   <header id="mainHeader">
+    <div class="nav-container">
+        <a href="index.html" class="logo">
+            <div class="logo-icon"><i class="bi bi-tree-fill"></i></div>
+            <div class="logo-text">نباتات <span>الحياة</span></div>
+        </a>
+        
+        <!-- زر البرجر منيو (موحد في كل الصفحات) -->
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav id="mainNav">
+            <ul id="navMenu">
+                <!-- ملاحظة: عدل الروابط في كل صفحة لتناسب الصفحة الحالية (active) -->
+                <li><a href="index.html" class="active" >الرئيسية</a></li>
+                <li class="dropdown">
+                    <a href="products.html" class="dropdown-toggle">منتجاتنا <i class="bi bi-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="products.html?category=herbs">أعشاب</a></li>
+                        <li><a href="products.html?category=spices">توابل</a></li>
+                        <li><a href="products.html?category=seeds">بذور</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">من نحن</a></li>
+                <li><a href="contact.html">اتصل بنا</a></li>
+                <!-- زر اللغة الموحد -->
+                <li><a href="en.html" id="langSwitcher" class="lang-btn"><i class="bi bi-globe"></i> <span id="langText">EN</span></a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+    <!-- القسم الرئيسي (Hero Section) -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <span class="hero-tag">✦ تصدير الأعشاب الفاخرة ✦</span>
+            <h1>أجود <span class="accent">أعشاب الطبيعة</span><br>نصدرها للعالم</h1>
+            <p>من أراضينا الخصبة إلى مستودعاتك — نصدر أنقى الأعشاب المختارة بعناية والمحصودة بطرق مستدامة للأسواق العالمية.</p>
+            
+            <div class="hero-buttons">
+                <!-- تم التعديل لتوجيه الزائر لصفحات المنتجات والاتصال المستقلة -->
+                <a href="products.html" class="btn btn-primary">تصفح المنتجات <i class="bi bi-arrow-left ms-2"></i></a>
+                <a href="contact.html" class="btn btn-outline">تواصل معنا</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم المنتجات (نسخة مختصرة للرئيسية) -->
+    <section class="products">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-tag">أبرز المنتجات</span>
+                <h2 class="section-title">تشكيلة <span class="accent">الأعشاب</span> الفاخرة</h2>
+                <p class="section-subtitle">نقدم تشكيلة واسعة من الأعشاب الطبية والعطرية المطابقة للمواصفات العالمية.</p>
+            </div>
+            <div class="products-grid" id="products-container">
+                <p>جاري تحميل المنتجات...</p>
+            </div>
+            <!-- زر لعرض باقي المنتجات -->
+            <div style="text-align: center; margin-top: 40px;" class="fade-up">
+                <a href="products.html" class="btn btn-primary">عرض جميع المنتجات <i class="bi bi-grid ms-2"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم من نحن (مقتطف للرئيسية) -->
+    <section class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-content fade-up">
+                    <span class="section-tag">نبذة عنا</span>
+                    <h2 class="section-title">جذور في <span class="accent">الطبيعة</span>، رعاية عالمية</h2>
+                    <p class="about-text">نحن في "نباتات الحياة" نفخر بكوننا جسراً بين خصوبة الأراضي المصرية والأسواق العالمية. نصدر أجود أنواع الأعشاب الطبيعية منذ سنوات، مع الالتزام التام بمعايير الجودة والاستدامة.</p>
+                    <ul class="about-features">
+                        <li><i class="bi bi-check-circle-fill"></i> زراعة مستدامة وخالية من المبيدات</li>
+                        <li><i class="bi bi-check-circle-fill"></i> جودة تصدير مطابقة للمواصفات الأوروبية</li>
+                        <li><i class="bi bi-check-circle-fill"></i> التزام بالمواعيد وتوريد الكميات الضخمة</li>
+                    </ul>
+                    <a href="about.html" class="btn btn-outline" style="margin-top: 20px; color: var(--green-dark); border-color: var(--green-dark);">اقرأ قصتنا كاملة</a>
+                </div>
+                <div class="about-image fade-up">
+                    <img src="https://i.pinimg.com/1200x/62/24/b3/6224b386b62d80e6671f2eb2c30d2c75.jpg" alt="عن الشركة">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- قسم اتصل بنا (مقتطف للرئيسية) -->
+    <section class="contact">
+        <div class="container">
+            <div class="section-header fade-up">
+                <span class="section-tag" style="color: var(--copper-light);">تواصل سريع</span>
+                <h2 class="section-title">لنبدأ <span class="accent">شراكتنا</span></h2>
+                <p class="section-subtitlef">نحن مستعدون لتلبية طلبات التصدير وتوفير أفضل عروض الأسعار.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info fade-up">
+                    <div class="contact-item">
+                        <i class="bi bi-geo-alt-fill contact-icon"></i> 
+                        <span>المقر الرئيسي: القاهرة، مصر</span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="bi bi-envelope-fill contact-icon"></i> 
+                        <span>البريد: 
+                            <a href="mailto:alsayed0852.as@gmail.com">alsayed0852.as@gmail.com</a>
+                        </span>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="bi bi-whatsapp contact-icon"></i> 
+                        <span>الهاتف/واتساب: 
+                            <div class="phone-numbers">
+                                <a href="tel:+201067131398" dir="ltr">+20 106 713 1398</a>
+                                <a href="tel:+201096413175" dir="ltr">+20 109 641 3175</a>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                
+               <form class="contact-form fade-up" id="contactForm">
+                    <input type="text" id="clientName" placeholder="الاسم أو الشركة" required>
+                    <input type="email" id="clientEmail" placeholder="البريد الإلكتروني" required>
+                    <textarea id="clientMessage" placeholder="رسالتك أو تفاصيل الطلب..." required rows="5"></textarea>
+                    <button type="mailto:alsayed0852.as@gmail.com" class="btn btn-primary"><i class="bi bi-send-fill ms-2"></i> إرسال الرسالة</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- الفوتر -->
+    <footer>
+        <div class="container">
+            <p>© 2026 نباتات الحياة للتصدير. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <!-- زر الواتساب العائم -->
+    <a href="https://wa.me/201067131398" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <!-- استدعاء ملفات الجافاسكريبت -->
+<script type="module" src="js/dataFetcher.js"></script>
+<script type="module" src="js/main.js"></script>   
+</body>
+</html>
