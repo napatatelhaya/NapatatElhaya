@@ -206,22 +206,27 @@
 </div>
 
 <script type="module">
-    // ✅ تم إضافة setDoc هنا لإصلاح مشكلة الحفظ
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
+    // ✅ تم تحديث مفاتيح Firebase الجديدة هنا
     const firebaseConfig = {
-        apiKey: "AIzaSyDTZfOOSxaWFlAc_smFxGKb3Sv3HH8tEAw",
-        authDomain: "napatatelhaya-98cb9.firebaseapp.com",
-        projectId: "napatatelhaya-98cb9",
-        storageBucket: "napatatelhaya-98cb9.firebasestorage.app",
-        messagingSenderId: "794316862369",
-        appId: "1:794316862369:web:592fF5ce4e867c97bc91e0"
+        apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
+        authDomain: "napataelhaya.firebaseapp.com",
+        projectId: "napataelhaya",
+        storageBucket: "napataelhaya.firebasestorage.app",
+        messagingSenderId: "4297790604",
+        appId: "1:4297790604:web:df023add20dfc543e5d7a9",
+        measurementId: "G-8X853PE60X"
     };
 
+    // ✅ تم تحديث مفتاح ImgBB الجديد هنا
+    const IMGBB_API_KEY = '4587f5c6c49e82d1d62e92a7337967e4';
+
     const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
     const db = getFirestore(app);
-    const IMGBB_API_KEY = '0ec6aadd9fe8bc68bdbe45aee860ce45';
 
     window.switchView = function(viewId) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -370,7 +375,6 @@
         } catch (e) { console.error(e); }
     }
 
-    // ✅ الإصلاح الجذري هنا: استخدام setDoc مع merge: true
     document.getElementById('companyForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = e.target.querySelector('button[type="submit"]');
@@ -397,7 +401,6 @@
                 updatedAt: serverTimestamp()
             };
             
-            // هذا السطر هو الحل السحري: ينشئ المستند باسم 'general' إذا لم يكن موجوداً، أو يحدّثه إذا كان موجوداً
             await setDoc(doc(db, 'settings', 'general'), data, { merge: true });
             
             document.getElementById('companyAlert').innerHTML = '<div class="alert alert-success">✅ تم حفظ هوية الشركة واللوجو بنجاح!</div>';
