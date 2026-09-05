@@ -210,7 +210,6 @@
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
     import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-    // ✅ تم تحديث مفاتيح Firebase الجديدة هنا
     const firebaseConfig = {
         apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
         authDomain: "napataelhaya.firebaseapp.com",
@@ -221,7 +220,6 @@
         measurementId: "G-8X853PE60X"
     };
 
-    // ✅ تم تحديث مفتاح ImgBB الجديد هنا
     const IMGBB_API_KEY = '4587f5c6c49e82d1d62e92a7337967e4';
 
     const app = initializeApp(firebaseConfig);
@@ -261,13 +259,65 @@
 
     if (sessionStorage.getItem('admin_logged') === 'true') window.switchView('dashboardView');
 
+    // ==========================================
+    // دالة معالجة وضغط الصور قبل الرفع (Canvas 800x800)
+    // ==========================================
+    function processImage(file) {
+        return new Promise((resolve, reject) => {
+            const MAX_SIZE = 32 * 1024 * 1024;
+            if (file.size > MAX_SIZE) return reject('حجم الصورة كبير جداً. الحد الأقصى هو 32 ميجابايت.');
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const TARGET_SIZE = 800;
+                    canvas.width = TARGET_SIZE;
+                    canvas.height = TARGET_SIZE;
+
+                    let srcX = 0, srcY = 0, srcWidth = img.width, srcHeight = img.height;
+                    if (img.width > img.height) {
+                        srcWidth = img.height;
+                        srcX = (img.width - img.height) / 2;
+                    } else {
+                        srcHeight = img.width;
+                        srcY = (img.height - img.width) / 2;
+                    }
+
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, TARGET_SIZE, TARGET_SIZE);
+
+                    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.85);
+                };
+                img.onerror = () => reject('حدث خطأ أثناء تحميل الصورة في المتصفح.');
+                img.src = event.target.result;
+            };
+            reader.onerror = () => reject('حدث خطأ أثناء قراءة ملف الصورة.');
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ==========================================
+    // دالة رفع الصورة (تستدعي دالة المعالجة أولاً)
+    // ==========================================
     async function uploadImage(file) {
-        const formData = new FormData();
-        formData.append('image', file);
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-        const result = await res.json();
-        if (!result.success) throw new Error('فشل رفع الصورة');
-        return result.data.url;
+        try {
+            const processedBlob = await processImage(file);
+            const formData = new FormData();
+            formData.append('image', processedBlob, 'processed_image.jpg');
+            
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+            const result = await res.json();
+            
+            if (!result.success) throw new Error('فشل رفع الصورة: ' + (result.error?.message || 'خطأ غير معروف'));
+            return result.data.url;
+        } catch (error) {
+            console.error("خطأ في عملية رفع الصورة:", error);
+            throw error;
+        }
     }
 
     async function loadDashboard() {
