@@ -136,7 +136,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // ==========================================
-    // هـ: معالجة نموذج الاتصال (Contact Form) - [تم التصحيح الجذري هنا]
+        // ==========================================
+    // هـ: معالجة نموذج الاتصال (Contact Form) - [مُحسّن ومضمون]
     // ==========================================
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
@@ -146,9 +147,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             const submitBtn = contactForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
 
-            // 1. جلب البيانات بمرونة (يدعم IDs أو أسماء الحقول أو أنواعها كخطة بديلة)
-            const nameInput = document.getElementById('clientName') || contactForm.querySelector('input[type="text"], input[name="name"]');
-            const emailInput = document.getElementById('clientEmail') || contactForm.querySelector('input[type="email"], input[name="email"]');
+            // البحث المرن عن الحقول (بالـ ID أو بالـ name أو بنوع الحقل)
+            const nameInput = document.getElementById('clientName') || contactForm.querySelector('input[name="name"], input[type="text"]');
+            const emailInput = document.getElementById('clientEmail') || contactForm.querySelector('input[name="email"], input[type="email"]');
             const messageInput = document.getElementById('clientMessage') || contactForm.querySelector('textarea, input[name="message"]');
 
             const name = nameInput ? nameInput.value.trim() : 'غير معروف';
@@ -156,11 +157,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const message = messageInput ? messageInput.value.trim() : 'لا توجد رسالة';
 
             try {
-                // تعطيل الزر أثناء المعالجة
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإرسال...';
 
-                // 2. الحفظ في قاعدة البيانات (لتظهر في لوحة التحكم)
+                // 1. الحفظ في قاعدة البيانات (لتظهر في لوحة التحكم)
                 await addDoc(collection(db, 'inquiries'), {
                     name: name,
                     email: email,
@@ -168,17 +168,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     createdAt: serverTimestamp()
                 });
 
-                // 3. فتح تطبيق البريد الإلكتروني كنسخة احتياطية (في نافذة جديدة لعدم مقاطعة المستخدم)
+                // 2. فتح تطبيق البريد (mailto)
                 const receiverEmail = 'alsayed0852.as@gmail.com';
                 const currentLang = document.documentElement.lang;
                 const subjectTitle = currentLang === 'en' ? 'New Inquiry - ' : 'طلب تواصل جديد - ';
                 const subject = encodeURIComponent(`${subjectTitle} ${name}`);
                 const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
                 
-                window.open(`mailto:${receiverEmail}?subject=${subject}&body=${body}`, '_blank');
+                // استخدام window.location لضمان التوافق مع جميع المتصفحات
+                window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
 
-                // 4. تحديث واجهة المستخدم للإشارة إلى النجاح
-                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> تم الإرسال وحفظ الرسالة ✓';
+                // 3. تحديث الواجهة
+                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> تم الإرسال بنجاح ✓';
                 submitBtn.style.backgroundColor = 'var(--success, #28a745)';
 
                 setTimeout(() => {
@@ -190,13 +191,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             } catch (error) {
                 console.error("خطأ في إرسال نموذج الاتصال:", error);
-                alert("عذراً، حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة لاحقاً أو التواصل عبر واتساب.");
+                alert("عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً أو التواصل عبر واتساب.");
                 submitBtn.innerHTML = originalBtnText;
                 submitBtn.disabled = false;
             }
         });
     }
-
     // ==========================================
     // و: مراقب التمرير لإظهار العناصر بنعومة (Scroll Reveal)
     // ==========================================
