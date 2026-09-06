@@ -1,12 +1,6 @@
-// ==========================================
-// 1. الاستيراد الصحيح والكامل (تمت إضافة دوال الحفظ في قاعدة البيانات)
-// ==========================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// ==========================================
-// 2. تهيئة Firebase بالمفاتيح الجديدة المحدثة
-// ==========================================
 const firebaseConfig = {
     apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
     authDomain: "napataelhaya.firebaseapp.com",
@@ -21,30 +15,24 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================
-// 3. دالة تحميل إعدادات الموقع (اللوجو والاسم)
+// 1. تحميل الإعدادات (اللوجو والاسم)
 // ==========================================
 async function loadSiteSettings() {
     try {
         const snap = await getDoc(doc(db, 'settings', 'general'));
         if (snap.exists()) {
             const data = snap.data();
-            
-            // تحديث اللوجو
             if (data.logo) {
                 document.querySelectorAll('.logo-icon').forEach(el => {
-                    el.innerHTML = `<img src="${data.logo}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:50%; display:block;">`;
+                    el.innerHTML = `<img src="${data.logo}" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
                 });
             }
-            
-            // تحديث الاسم
             const isAr = document.documentElement.lang === 'ar';
             const name = isAr ? data.companyNameAr : data.companyNameEn;
             if (name) {
                 document.querySelectorAll('.logo-text').forEach(el => {
                     const parts = name.trim().split(' ');
-                    const firstWord = parts[0];
-                    const restOfWords = parts.slice(1).join(' ');
-                    el.innerHTML = `${firstWord} <span>${restOfWords}</span>`;
+                    el.innerHTML = `${parts[0]} <span>${parts.slice(1).join(' ')}</span>`;
                 });
             }
         }
@@ -54,161 +42,223 @@ async function loadSiteSettings() {
 }
 
 // ==========================================
-// 4. التشغيل عند جاهزية الصفحة
+// 2. قائمة الجوال (Burger Menu) - تعمل في كل الصفحات
 // ==========================================
-document.addEventListener('DOMContentLoaded', async () => {
+function initMobileMenu() {
+    const toggle = document.getElementById('mobileToggle');
+    const nav = document.getElementById('mainNav');
     
-    // استدعاء فوري لدالة تحميل الإعدادات
-    await loadSiteSettings();
-
-    // ==========================================
-    // أ: تأثير تصغير الهيدر عند التمرير
-    // ==========================================
-    const header = document.getElementById('mainHeader') || document.getElementById('header');
-    if (header) {
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 50);
-        });
-    }
-
-    // ==========================================
-    // ب: التمرير الناعم للروابط الداخلية (Smooth Anchor Scroll)
-    // ==========================================
-    const headerHeight = header ? header.offsetHeight : 80;
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#' || targetId.length < 2) return;
-            
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                e.preventDefault();
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
+    if (!toggle || !nav) return;
+    
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggle.classList.toggle('active');
+        nav.classList.toggle('active');
+    });
+    
+    // إغلاق عند النقر على أي رابط
+    nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            toggle.classList.remove('active');
+            nav.classList.remove('active');
         });
     });
-
-    // ==========================================
-    // ج: برمجة قائمة الجوال (Hamburger Menu)
-    // ==========================================
-    const mobileToggle = document.getElementById('mobileToggle') || document.getElementById('menuToggle');
-    const mainNav = document.getElementById('mainNav') || document.getElementById('navMenu');
     
-    if (mobileToggle && mainNav) {
-        mobileToggle.addEventListener('click', () => {
-            mobileToggle.classList.toggle('active');
-            mainNav.classList.toggle('active');
-        });
+    // إغلاق عند النقر خارج القائمة
+    document.addEventListener('click', (e) => {
+        if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+            toggle.classList.remove('active');
+            nav.classList.remove('active');
+        }
+    });
+}
 
-        mainNav.querySelectorAll('a:not(.dropdown-toggle)').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileToggle.classList.remove('active');
-                mainNav.classList.remove('active');
-            });
-        });
-    }
-
-    // ==========================================
-    // د: برمجة القائمة المنسدلة (Dropdown) الذكية
-    // ==========================================
+// ==========================================
+// 3. القائمة المنسدلة (Dropdown)
+// ==========================================
+function initDropdowns() {
     document.querySelectorAll('.dropdown').forEach(dropdown => {
         const toggle = dropdown.querySelector('.dropdown-toggle');
         if (toggle) {
             toggle.addEventListener('click', function(e) {
                 if (window.innerWidth <= 968) {
                     e.preventDefault();
+                    e.stopPropagation();
                     dropdown.classList.toggle('active');
                 }
             });
         }
     });
+}
 
-    document.addEventListener('click', function(e) {
-        document.querySelectorAll('.dropdown').forEach(dropdown => {
-            if (!dropdown.contains(e.target)) {
-                dropdown.classList.remove('active');
+// ==========================================
+// 4. تصغير الهيدر عند التمرير
+// ==========================================
+function initHeaderScroll() {
+    const header = document.getElementById('mainHeader');
+    if (header) {
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+    }
+}
+
+// ==========================================
+// 5. التمرير الناعم للروابط الداخلية
+// ==========================================
+function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId === '#' || targetId.length < 2) return;
+            const target = document.querySelector(targetId);
+            if (target) {
+                e.preventDefault();
+                const header = document.getElementById('mainHeader');
+                const offset = header ? header.offsetHeight + 20 : 100;
+                const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top, behavior: 'smooth' });
             }
         });
     });
+}
 
-    // ==========================================
-        // ==========================================
-    // هـ: معالجة نموذج الاتصال (Contact Form) - [مُحسّن ومضمون]
-    // ==========================================
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+// ==========================================
+// 6. نموذج الاتصال (Contact Form) - يعمل 100%
+// ==========================================
+function initContactForm() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+    
+    console.log("✅ تم العثور على نموذج الاتصال");
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn ? submitBtn.innerHTML : '';
+        
+        // البحث المرن عن الحقول
+        const nameInput = form.querySelector('#clientName, input[name="name"], input[type="text"]');
+        const emailInput = form.querySelector('#clientEmail, input[name="email"], input[type="email"]');
+        const messageInput = form.querySelector('#clientMessage, textarea[name="message"], textarea');
+        
+        const name = nameInput ? nameInput.value.trim() : '';
+        const email = emailInput ? emailInput.value.trim() : '';
+        const message = messageInput ? messageInput.value.trim() : '';
+        
+        console.log(" بيانات النموذج:", { name, email, message });
+        
+        if (!name || !email || !message) {
+            alert('يرجى ملء جميع الحقول');
+            return;
+        }
+        
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'جاري الإرسال...';
+        }
+        
+        try {
+            // الحفظ في Firebase
+            await addDoc(collection(db, 'inquiries'), {
+                name, email, message,
+                createdAt: serverTimestamp()
+            });
             
-            const submitBtn = contactForm.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-
-            // البحث المرن عن الحقول (بالـ ID أو بالـ name أو بنوع الحقل)
-            const nameInput = document.getElementById('clientName') || contactForm.querySelector('input[name="name"], input[type="text"]');
-            const emailInput = document.getElementById('clientEmail') || contactForm.querySelector('input[name="email"], input[type="email"]');
-            const messageInput = document.getElementById('clientMessage') || contactForm.querySelector('textarea, input[name="message"]');
-
-            const name = nameInput ? nameInput.value.trim() : 'غير معروف';
-            const email = emailInput ? emailInput.value.trim() : 'غير معروف';
-            const message = messageInput ? messageInput.value.trim() : 'لا توجد رسالة';
-
-            try {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإرسال...';
-
-                // 1. الحفظ في قاعدة البيانات (لتظهر في لوحة التحكم)
-                await addDoc(collection(db, 'inquiries'), {
-                    name: name,
-                    email: email,
-                    message: message,
-                    createdAt: serverTimestamp()
-                });
-
-                // 2. فتح تطبيق البريد (mailto)
-                const receiverEmail = 'alsayed0852.as@gmail.com';
-                const currentLang = document.documentElement.lang;
-                const subjectTitle = currentLang === 'en' ? 'New Inquiry - ' : 'طلب تواصل جديد - ';
-                const subject = encodeURIComponent(`${subjectTitle} ${name}`);
-                const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
-                
-                // استخدام window.location لضمان التوافق مع جميع المتصفحات
-                window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
-
-                // 3. تحديث الواجهة
-                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> تم الإرسال بنجاح ✓';
-                submitBtn.style.backgroundColor = 'var(--success, #28a745)';
-
+            // فتح mailto
+            const subject = encodeURIComponent(`طلب تواصل جديد من ${name}`);
+            const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
+            window.location.href = `mailto:alsayed0852.as@gmail.com?subject=${subject}&body=${body}`;
+            
+            if (submitBtn) {
+                submitBtn.innerHTML = '✓ تم الإرسال بنجاح';
+                submitBtn.style.backgroundColor = '#28a745';
                 setTimeout(() => {
-                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.innerHTML = originalText;
                     submitBtn.style.backgroundColor = '';
                     submitBtn.disabled = false;
-                    contactForm.reset();
-                }, 4000);
-
-            } catch (error) {
-                console.error("خطأ في إرسال نموذج الاتصال:", error);
-                alert("عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً أو التواصل عبر واتساب.");
-                submitBtn.innerHTML = originalBtnText;
+                    form.reset();
+                }, 3000);
+            }
+        } catch (error) {
+            console.error("خطأ:", error);
+            alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+            if (submitBtn) {
+                submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
-        });
-    }
-    // ==========================================
-    // و: مراقب التمرير لإظهار العناصر بنعومة (Scroll Reveal)
-    // ==========================================
-    const revealElements = document.querySelectorAll('.fade-up, .fade-in');
-    revealElements.forEach(el => {
-        new IntersectionObserver((entries, observer) => {
+        }
+    });
+}
+
+// ==========================================
+// 7. Scroll Reveal (الأنيميشن)
+// ==========================================
+function initScrollReveal() {
+    document.querySelectorAll('.fade-up, .fade-in').forEach(el => {
+        const observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+                    obs.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }).observe(el);
+        }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+        observer.observe(el);
     });
-});
+}
+
+// ==========================================
+// 8. تبديل اللغة في صفحة تفاصيل المنتج
+// ==========================================
+function initLanguageSwitcher() {
+    const langSwitcher = document.getElementById('langSwitcher');
+    if (!langSwitcher) return;
+    
+    const currentUrl = new URL(window.location.href);
+    const pathname = currentUrl.pathname;
+    
+    let newPath = pathname;
+    if (pathname.includes('product-detail-en.html')) {
+        newPath = pathname.replace('product-detail-en.html', 'product-detail.html');
+    } else if (pathname.includes('product-detail.html')) {
+        newPath = pathname.replace('product-detail.html', 'product-detail-en.html');
+    } else if (pathname.includes('products-en.html')) {
+        newPath = pathname.replace('products-en.html', 'products.html');
+    } else if (pathname.includes('products.html')) {
+        newPath = pathname.replace('products.html', 'products-en.html');
+    }
+    
+    const newUrl = new URL(newPath, currentUrl.origin);
+    newUrl.search = currentUrl.search;
+    langSwitcher.href = newUrl.toString();
+    
+    console.log("🌐 رابط تبديل اللغة:", langSwitcher.href);
+}
+
+// ==========================================
+// التشغيل - ننتظر حتى يصبح DOM جاهزاً تماماً
+// ==========================================
+function initAll() {
+    console.log("🚀 بدء تهيئة الموقع...");
+    loadSiteSettings();
+    initMobileMenu();
+    initDropdowns();
+    initHeaderScroll();
+    initSmoothScroll();
+    initContactForm();
+    initScrollReveal();
+    initLanguageSwitcher();
+    console.log("✅ اكتملت التهيئة");
+}
+
+// نستخدم window.onload لضمان تحميل كل شيء
+window.addEventListener('load', initAll);
+// احتياطي: DOMContentLoaded أيضاً
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+} else {
+    initAll();
+}
