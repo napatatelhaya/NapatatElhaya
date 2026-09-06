@@ -73,11 +73,10 @@
 
     <a href="https://wa.me/201067131398" class="whatsapp-float" target="_blank" rel="noopener noreferrer"><i class="bi bi-whatsapp"></i></a>
 
-    <script type="module">
+        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ✅ مفاتيح Firebase الجديدة
         const firebaseConfig = {
             apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
             authDomain: "napataelhaya.firebaseapp.com",
@@ -94,15 +93,23 @@
         const urlParams = new URLSearchParams(window.location.search);
         const docId = urlParams.get('id');
 
-        if (!docId) { window.location.href = 'products.html'; }
+        console.log("🔍 [تشخيص] معرف المنتج المستخرج من الرابط:", docId);
+
+        if (!docId) { 
+            console.warn("⚠️ [تشخيص] لا يوجد معرف منتج، جاري التوجيه لصفحة المنتجات.");
+            window.location.href = 'products.html'; 
+        }
 
         async function loadProduct() {
             try {
+                console.log("⏳ [تشخيص] جاري جلب بيانات المنتج من Firebase...");
                 const productRef = doc(db, "products", docId);
                 const productSnap = await getDoc(productRef);
 
                 if (productSnap.exists()) {
+                    console.log("✅ [تشخيص] تم العثور على المنتج بنجاح:", productSnap.data());
                     const product = productSnap.data();
+                    
                     document.getElementById('productTitle').textContent = product.name.ar;
                     document.getElementById('productName').textContent = product.name.ar;
                     document.getElementById('productImage').src = product.image;
@@ -115,10 +122,11 @@
                     document.getElementById('whatsappLink').href = `https://wa.me/201067131398?text=${encodeURIComponent(whatsappMsg)}`;
                     document.title = `${product.name.ar} | نباتات الحياة`;
                 } else {
+                    console.error("❌ [تشخيص] المستند غير موجود في قاعدة البيانات بهذا المعرف.");
                     window.location.href = 'products.html';
                 }
             } catch (error) {
-                console.error("Error loading product:", error);
+                console.error("❌ [تشخيص] خطأ فادح في جلب المنتج:", error);
                 window.location.href = 'products.html';
             }
         }
