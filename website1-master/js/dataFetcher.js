@@ -1,13 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+// ✅ مفاتيح Firebase الجديدة
 const firebaseConfig = {
-    apiKey: "AIzaSyDTZfOOSxaWFlAc_smFxGKb3Sv3HH8tEAw",
-    authDomain: "napatatelhaya-98cb9.firebaseapp.com",
-    projectId: "napatatelhaya-98cb9",
-    storageBucket: "napatatelhaya-98cb9.firebasestorage.app",
-    messagingSenderId: "794316862369",
-    appId: "1:794316862369:web:592fF5ce4e867c97bc91e0"
+    apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
+    authDomain: "napataelhaya.firebaseapp.com",
+    projectId: "napataelhaya",
+    storageBucket: "napataelhaya.firebasestorage.app",
+    messagingSenderId: "4297790604",
+    appId: "1:4297790604:web:df023add20dfc543e5d7a9",
+    measurementId: "G-8X853PE60X"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -37,12 +39,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // ==========================================
-        // التعديل الجذري هنا: حفظ المعرف الحقيقي للمستند
-        // ==========================================
+        // حفظ المعرف الحقيقي للمستند لربطه بصفحة التفاصيل
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            data.docId = doc.id; // إضافة المعرف الحقيقي لربطه بصفحة التفاصيل
+            data.docId = doc.id; 
             allProducts.push(data);
         });
 
@@ -95,7 +95,6 @@ function renderProducts(category, isArabic) {
         const linkText = isArabic ? 'استفسار ←' : 'Inquire →';
         const viewText = isArabic ? 'عرض التفاصيل' : 'View Details';
 
-        // استخدام المعرف الحقيقي (docId) الذي قمنا بحفظه في الأعلى
         const detailUrl = `product-detail.html?id=${product.docId}`;
 
         const productCard = `
