@@ -74,21 +74,33 @@
 </head>
 <body>
 <div class="app-container">
+    <!-- شاشة الدخول الآمنة -->
     <div id="loginView" class="view-section active">
         <div class="login-wrapper">
             <div class="login-logo">🌿</div>
-            <h2 style="text-align: center; color: var(--green-dark); margin-bottom: 30px;">إدارة نباتات الحياة</h2>
+            <h2 style="text-align: center; color: var(--green-dark); margin-bottom: 30px;">تسجيل دخول المدير</h2>
             <div class="form-card">
                 <form id="loginForm">
-                    <div class="form-group"><label>كلمة المرور</label><input type="password" id="adminPassword" required placeholder="أدخل كلمة المرور..."></div>
+                    <div class="form-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" id="adminEmail" required placeholder="napatatelhaya@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label>كلمة المرور</label>
+                        <input type="password" id="adminPassword" required placeholder="أدخل كلمة المرور...">
+                    </div>
                     <button type="submit" class="btn-primary">تسجيل الدخول</button>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- لوحة التحكم (تظهر فقط بعد تسجيل الدخول) -->
     <div id="dashboardView" class="view-section">
-        <div class="page-header"><h1 class="page-title">لوحة التحكم</h1><button class="back-btn" onclick="logout()" title="خروج"><i class="bi bi-box-arrow-right"></i></button></div>
+        <div class="page-header">
+            <h1 class="page-title">لوحة التحكم</h1>
+            <button class="back-btn" onclick="logout()" title="تسجيل خروج"><i class="bi bi-box-arrow-right"></i> خروج</button>
+        </div>
         <div class="stats-grid">
             <div class="stat-card"><div class="stat-icon"><i class="bi bi-box-seam-fill"></i></div><div class="stat-number" id="statProducts">0</div><div class="stat-label">منتج نشط</div></div>
             <div class="stat-card"><div class="stat-icon"><i class="bi bi-envelope-fill"></i></div><div class="stat-number" id="statInquiries">0</div><div class="stat-label">طلب وارد</div></div>
@@ -104,6 +116,7 @@
         <div class="quick-actions"><a href="../index.html" target="_blank" class="btn-secondary"><i class="bi bi-eye"></i> معاينة الموقع</a></div>
     </div>
 
+    <!-- باقي أقسام لوحة التحكم (المنتجات، الهوية، الهيرو، إلخ) تبقى كما هي تماماً -->
     <div id="productsListView" class="view-section">
         <div class="page-header"><button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button><h1 class="page-title">المنتجات</h1></div>
         <button class="btn-primary" onclick="switchView('addProductView')" style="margin-bottom: 20px;"><i class="bi bi-plus-lg"></i> إضافة منتج جديد</button>
@@ -206,9 +219,10 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
-    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+    // تم إضافة مكتبة المصادقة (Authentication)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, setDoc, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
@@ -220,11 +234,51 @@
         measurementId: "G-8X853PE60X"
     };
 
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
     const IMGBB_API_KEY = '4587f5c6c49e82d1d62e92a7337967e4';
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getFirestore(app);
+    // مراقبة حالة تسجيل الدخول (تظهر لوحة التحكم فقط إذا كان المستخدم مسجلاً)
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // المستخدم مسجل دخول، اعرض لوحة التحكم
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('dashboardView').classList.add('active');
+            loadDashboard();
+        } else {
+            // المستخدم غير مسجل، اعرض شاشة الدخول
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById('loginView').classList.add('active');
+        }
+    });
+
+    // معالجة نموذج تسجيل الدخول
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('adminEmail').value;
+        const password = document.getElementById('adminPassword').value;
+        const btn = this.querySelector('button[type="submit"]');
+        
+        btn.disabled = true;
+        btn.innerHTML = 'جاري التحقق...';
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            // onAuthStateChanged سيتولى عرض لوحة التحكم تلقائياً
+        } catch (error) {
+            alert('فشل تسجيل الدخول: تأكد من البريد الإلكتروني وكلمة المرور.');
+            console.error(error);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'تسجيل الدخول';
+        }
+    });
+
+    // دالة تسجيل الخروج
+    window.logout = async function() {
+        await signOut(auth);
+    };
 
     window.switchView = function(viewId) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -243,30 +297,11 @@
         }
     };
 
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (document.getElementById('adminPassword').value === 'admin2026') {
-            sessionStorage.setItem('admin_logged', 'true');
-            window.switchView('dashboardView');
-        } else { alert('كلمة المرور غير صحيحة'); }
-    });
-
-    window.logout = function() {
-        sessionStorage.removeItem('admin_logged');
-        document.getElementById('adminPassword').value = '';
-        window.switchView('loginView');
-    };
-
-    if (sessionStorage.getItem('admin_logged') === 'true') window.switchView('dashboardView');
-
-    // ==========================================
-    // دالة معالجة وضغط الصور قبل الرفع (Canvas 800x800)
-    // ==========================================
+    // دالة معالجة الصور (موجودة كما هي لضمان الجودة)
     function processImage(file) {
         return new Promise((resolve, reject) => {
             const MAX_SIZE = 32 * 1024 * 1024;
             if (file.size > MAX_SIZE) return reject('حجم الصورة كبير جداً. الحد الأقصى هو 32 ميجابايت.');
-
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
@@ -274,50 +309,31 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const TARGET_SIZE = 800;
-                    canvas.width = TARGET_SIZE;
-                    canvas.height = TARGET_SIZE;
-
+                    canvas.width = TARGET_SIZE; canvas.height = TARGET_SIZE;
                     let srcX = 0, srcY = 0, srcWidth = img.width, srcHeight = img.height;
-                    if (img.width > img.height) {
-                        srcWidth = img.height;
-                        srcX = (img.width - img.height) / 2;
-                    } else {
-                        srcHeight = img.width;
-                        srcY = (img.height - img.width) / 2;
-                    }
-
+                    if (img.width > img.height) { srcWidth = img.height; srcX = (img.width - img.height) / 2; } 
+                    else { srcHeight = img.width; srcY = (img.height - img.width) / 2; }
                     ctx.fillStyle = "#ffffff";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, TARGET_SIZE, TARGET_SIZE);
-
                     canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.85);
                 };
-                img.onerror = () => reject('حدث خطأ أثناء تحميل الصورة في المتصفح.');
+                img.onerror = () => reject('خطأ في تحميل الصورة.');
                 img.src = event.target.result;
             };
-            reader.onerror = () => reject('حدث خطأ أثناء قراءة ملف الصورة.');
+            reader.onerror = () => reject('خطأ في قراءة الملف.');
             reader.readAsDataURL(file);
         });
     }
 
-    // ==========================================
-    // دالة رفع الصورة (تستدعي دالة المعالجة أولاً)
-    // ==========================================
     async function uploadImage(file) {
-        try {
-            const processedBlob = await processImage(file);
-            const formData = new FormData();
-            formData.append('image', processedBlob, 'processed_image.jpg');
-            
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-            const result = await res.json();
-            
-            if (!result.success) throw new Error('فشل رفع الصورة: ' + (result.error?.message || 'خطأ غير معروف'));
-            return result.data.url;
-        } catch (error) {
-            console.error("خطأ في عملية رفع الصورة:", error);
-            throw error;
-        }
+        const processedBlob = await processImage(file);
+        const formData = new FormData();
+        formData.append('image', processedBlob, 'processed.jpg');
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
+        const result = await res.json();
+        if (!result.success) throw new Error('فشل رفع الصورة');
+        return result.data.url;
     }
 
     async function loadDashboard() {
@@ -437,29 +453,19 @@
                 logoUrl = await uploadImage(logoFile);
                 document.getElementById('logoPreview').src = logoUrl;
             }
-            
             const data = {
-                logo: logoUrl,
-                companyNameAr: document.getElementById('companyNameAr').value,
-                companyNameEn: document.getElementById('companyNameEn').value,
-                whatsappMain: document.getElementById('whatsappMain').value,
-                whatsappSecondary: document.getElementById('whatsappSecondary').value,
-                email: document.getElementById('companyEmail').value,
-                addressAr: document.getElementById('companyAddressAr').value,
-                addressEn: document.getElementById('companyAddressEn').value,
+                logo: logoUrl, companyNameAr: document.getElementById('companyNameAr').value, companyNameEn: document.getElementById('companyNameEn').value,
+                whatsappMain: document.getElementById('whatsappMain').value, whatsappSecondary: document.getElementById('whatsappSecondary').value,
+                email: document.getElementById('companyEmail').value, addressAr: document.getElementById('companyAddressAr').value, addressEn: document.getElementById('companyAddressEn').value,
                 social: { facebook: document.getElementById('socialFacebook').value, instagram: document.getElementById('socialInstagram').value, linkedin: document.getElementById('socialLinkedin').value },
                 updatedAt: serverTimestamp()
             };
-            
             await setDoc(doc(db, 'settings', 'general'), data, { merge: true });
-            
             document.getElementById('companyAlert').innerHTML = '<div class="alert alert-success">✅ تم حفظ هوية الشركة واللوجو بنجاح!</div>';
             setTimeout(() => { document.getElementById('companyAlert').innerHTML = ''; }, 3000);
         } catch (err) {
             document.getElementById('companyAlert').innerHTML = `<div class="alert alert-danger">❌ خطأ: ${err.message}</div>`;
-        } finally {
-            btn.disabled = false;
-        }
+        } finally { btn.disabled = false; }
     });
 
     async function loadHeroData() {
@@ -494,10 +500,8 @@
             const imageFile = document.getElementById('heroImage').files[0];
             let imageUrl = document.getElementById('heroImagePreview').src;
             if (imageFile) imageUrl = await uploadImage(imageFile);
-            
             const data = { image: imageUrl, opacity: parseFloat(document.getElementById('heroOpacity').value), titleAr: document.getElementById('heroTitleAr').value, titleEn: document.getElementById('heroTitleEn').value, subtitleAr: document.getElementById('heroSubtitleAr').value, subtitleEn: document.getElementById('heroSubtitleEn').value, updatedAt: serverTimestamp() };
             await setDoc(doc(db, 'settings', page), data, { merge: true });
-            
             document.getElementById('heroImagePreview').src = imageUrl;
             document.getElementById('heroAlert').innerHTML = '<div class="alert alert-success">تم حفظ Hero بنجاح!</div>';
             setTimeout(() => { document.getElementById('heroAlert').innerHTML = ''; }, 3000);
