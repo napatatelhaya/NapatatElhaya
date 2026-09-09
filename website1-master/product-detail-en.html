@@ -117,10 +117,15 @@
 
         console.log("🔍 Product ID:", docId);
 
-        if (!docId) {
-            console.warn("⚠️ No product ID found, redirecting to products page.");
+       if (!docId) {
+    console.warn("⚠️ No product ID found in URL");
+    // لا تُوجّه فوراً - انتظر قليلاً للتأكد
+    setTimeout(() => {
+        if (!window.location.search.includes('id=')) {
             window.location.href = 'products-en.html';
         }
+    }, 100);
+}
 
         async function loadProduct() {
             try {
