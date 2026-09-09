@@ -144,7 +144,7 @@ function initContactForm() {
             submitBtn.innerHTML = 'جاري الفتح...';
         }
         
-        const receiverEmail = 'alsayed0852.as@gmail.com';
+        const receiverEmail = 'info@napatatelhaya.com';
         const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
         const body = encodeURIComponent(`الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`);
         
