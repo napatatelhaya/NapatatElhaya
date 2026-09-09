@@ -140,98 +140,54 @@ function initSmoothScroll() {
 // ==========================================
 // 6. نموذج الاتصال (Contact Form) - نسخة مضمونة
 // ==========================================
+// ==========================================
+// 6. نموذج الاتصال (Contact Form) - فتح الإيميل فقط (بدون Firebase)
+// ==========================================
 function initContactForm() {
     const form = document.getElementById('contactForm');
-    if (!form) {
-        console.log("⚠️ نموذج الاتصال غير موجود في هذه الصفحة");
-        return;
-    }
-    
-    console.log("✅ تم العثور على نموذج الاتصال");
-    
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    if (!form) return; // الخروج بهدوء إذا لم يكن النموذج موجوداً في الصفحة
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // منع إعادة تحميل الصفحة الافتراضي
         
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn ? submitBtn.innerHTML : '';
-        
-        // البحث عن الحقول
-        const nameInput = form.querySelector('#clientName, input[name="name"], input[type="text"]');
-        const emailInput = form.querySelector('#clientEmail, input[name="email"], input[type="email"]');
-        const messageInput = form.querySelector('#clientMessage, textarea[name="message"], textarea');
-        
-        const name = nameInput ? nameInput.value.trim() : '';
-        const email = emailInput ? emailInput.value.trim() : '';
-        const message = messageInput ? messageInput.value.trim() : '';
-        
-        console.log("📝 البيانات:", { name, email, message });
+        // جلب البيانات مباشرة من المعرفات الموجودة في كود HTML الخاص بك
+        const name = document.getElementById('clientName').value.trim();
+        const email = document.getElementById('clientEmail').value.trim();
+        const message = document.getElementById('clientMessage').value.trim();
         
         if (!name || !email || !message) {
-            alert('يرجى ملء جميع الحقول');
+            alert('يرجى ملء جميع الحقول المطلوبة');
             return;
         }
         
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإرسال...';
-        }
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
         
-        try {
-            // 1. الحفظ في Firebase
-            await addDoc(collection(db, 'inquiries'), {
-                name: name,
-                email: email,
-                message: message,
-                createdAt: serverTimestamp()
-            });
-            
-            console.log("✅ تم الحفظ في Firebase");
-            
-            // 2. فتح mailto
-            const receiverEmail = 'alsayed0852.as@gmail.com';
-            const subject = `طلب تواصل جديد من ${name}`;
-            const body = `الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
-            
-            const mailtoLink = `mailto:${encodeURIComponent(receiverEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            // استخدام window.location لضمان الفتح
-            window.location.href = mailtoLink;
-            
-            // 3. تحديث الواجهة
-            if (submitBtn) {
-                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> ✓ تم الإرسال بنجاح';
-                submitBtn.style.backgroundColor = '#28a745';
-                
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.style.backgroundColor = '';
-                    submitBtn.disabled = false;
-                    form.reset();
-                }, 4000);
-            }
-            
-        } catch (error) {
-            console.error("❌ خطأ مفصل:", error);
-            console.error("Error code:", error.code);
-            console.error("Error message:", error.message);
-            
-            // محاولة فتح mailto حتى لو فشل Firebase
-            const receiverEmail = 'alsayed0852.as@gmail.com';
-            const subject = `طلب تواصل جديد من ${name}`;
-            const body = `الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
-            window.location.href = `mailto:${encodeURIComponent(receiverEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            alert('تم فتح برنامج الإيميل. ملاحظة: لم يتم الحفظ في قاعدة البيانات.');
-            
-            if (submitBtn) {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        }
+        // 1. تغيير حالة الزر ليعرف المستخدم أن هناك تفاعلاً
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الفتح...';
+        
+        // 2. تجهيز رابط mailto بشكل آمن
+        const receiverEmail = 'alsayed0852.as@gmail.com';
+        const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
+        const body = encodeURIComponent(`الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`);
+        const mailtoLink = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
+        
+        // 3. فتح برنامج الإيميل الافتراضي للمستخدم
+        window.location.href = mailtoLink;
+        
+        // 4. إظهار رسالة النجاح وإعادة تعيين النموذج بعد 3 ثوانٍ
+        submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم فتح برنامج البريد ✓';
+        submitBtn.style.backgroundColor = '#28a745'; // لون أخضر
+        
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.style.backgroundColor = '';
+            submitBtn.disabled = false;
+            form.reset(); // تفريغ الحقول
+        }, 3000);
     });
 }
-
 
 // ==========================================
 // 7. Scroll Reveal (الأنيميشن)
