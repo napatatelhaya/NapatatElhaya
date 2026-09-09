@@ -193,28 +193,7 @@
   </div>
 </footer>
 
-<script>
-  const header = document.getElementById('mainHeader');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) header.classList.add('scrolled');
-    else header.classList.remove('scrolled');
-  });
 
-  const mobileToggle = document.getElementById('mobileToggle');
-  const nav = document.getElementById('mainNav');
-
-  mobileToggle.addEventListener('click', () => {
-    mobileToggle.classList.toggle('active');
-    nav.classList.toggle('active');
-  });
-
-  document.querySelectorAll('#navMenu a').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileToggle.classList.remove('active');
-      nav.classList.remove('active');
-    });
-  });
-</script>
 
 <script type="module" src="js/dataFetcher.js"></script>
 <script type="module" src="js/main.js"></script>   
