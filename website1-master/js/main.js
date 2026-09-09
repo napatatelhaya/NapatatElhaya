@@ -219,54 +219,59 @@ function initScrollReveal() {
 // ==========================================
 // 8. تبديل اللغة الذكي - يعمل مع أو بدون .html
 // ==========================================
+// ==========================================
+// 8. تبديل اللغة الذكي - تطابق تام في نهاية المسار
+// ==========================================
 function initLanguageSwitcher() {
     const langSwitcher = document.getElementById('langSwitcher');
-    if (!langSwitcher) {
-        console.log("️ لا يوجد زر تبديل لغة في هذه الصفحة");
-        return;
-    }
+    if (!langSwitcher) return;
     
     const currentPath = window.location.pathname;
     const currentSearch = window.location.search;
     const baseUrl = window.location.origin;
     
-    console.log(" المسار الحالي:", currentPath);
+    // نزيل .html للتعامل الموحد
+    const pathClean = currentPath.replace('.html', '');
     
-    // خريطة التحويل - تدعم مع وبدون .html
+    console.log("🔍 المسار الحالي:", pathClean);
+    
+    // خريطة التحويل - الترتيب مهم: الأطول أولاً
     const pageMap = [
-        { from: 'index', to: 'en' },
-        { from: 'en', to: 'index' },
-        { from: 'products', to: 'products-en' },
-        { from: 'products-en', to: 'products' },
-        { from: 'about', to: 'about-en' },
-        { from: 'about-en', to: 'about' },
-        { from: 'contact', to: 'contact-en' },
-        { from: 'contact-en', to: 'contact' },
+        { from: 'product-detail-en', to: 'product-detail' },
         { from: 'product-detail', to: 'product-detail-en' },
-        { from: 'product-detail-en', to: 'product-detail' }
+        { from: 'products-en', to: 'products' },
+        { from: 'products', to: 'products-en' },
+        { from: 'about-en', to: 'about' },
+        { from: 'about', to: 'about-en' },
+        { from: 'contact-en', to: 'contact' },
+        { from: 'contact', to: 'contact-en' },
+        { from: 'en', to: 'index' },
+        { from: 'index', to: 'en' }
     ];
     
-    let newPath = null;
+    let matched = null;
     
+    // نبحث عن التطابق التام في نهاية المسار
     for (const { from, to } of pageMap) {
-        // البحث عن اسم الصفحة (مع أو بدون .html)
-        if (currentPath.includes(from)) {
-            newPath = currentPath.replace(from, to);
-            console.log(`🔄 التبديل من ${from} إلى ${to}`);
+        if (pathClean.endsWith('/' + from) || pathClean === '/' + from) {
+            matched = { from, to };
             break;
         }
     }
     
-    if (!newPath) {
-        console.warn("⚠️ لم يتم العثور على تطابق في خريطة التبديل");
+    if (!matched) {
+        console.warn("⚠️ لم يتم العثور على تطابق");
         return;
     }
     
+    // نستبدل فقط الجزء المطابق في النهاية
+    const newPath = pathClean.replace(new RegExp(matched.from + '$'), matched.to) + '.html';
     const newUrl = baseUrl + newPath + currentSearch;
+    
     langSwitcher.href = newUrl;
-    console.log("✅ رابط تبديل اللغة:", newUrl);
+    console.log(`🔄 ${matched.from} → ${matched.to}`);
+    console.log("✅ الرابط الجديد:", newUrl);
 }
-
 // ==========================================
 // التشغيل - ننتظر حتى يصبح DOM جاهزاً تماماً
 // ==========================================
