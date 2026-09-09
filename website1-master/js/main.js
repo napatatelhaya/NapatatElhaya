@@ -14,9 +14,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ==========================================
-// 1. تحميل الإعدادات (اللوجو والاسم)
-// ==========================================
+// تحميل الإعدادات
 async function loadSiteSettings() {
     try {
         const snap = await getDoc(doc(db, 'settings', 'general'));
@@ -41,111 +39,28 @@ async function loadSiteSettings() {
     }
 }
 
-// ==========================================
-// 2. قائمة الجوال (Burger Menu) - تعمل في كل الصفحات
-// ==========================================
+// قائمة الجوال
 function initMobileMenu() {
     const toggle = document.getElementById('mobileToggle');
     const nav = document.getElementById('mainNav');
     
-    if (!toggle || !nav) {
-        console.log("⚠️ عناصر القائمة غير موجودة:", { toggle: !!toggle, nav: !!nav });
-        return;
-    }
+    if (!toggle || !nav) return;
     
-    console.log("✅ تم العثور على عناصر القائمة");
-    
-    // فتح/إغلاق عند النقر على الزر
     toggle.addEventListener('click', (e) => {
-        e.preventDefault();
         e.stopPropagation();
         toggle.classList.toggle('active');
         nav.classList.toggle('active');
-        console.log("🍔 القائمة:", nav.classList.contains('active') ? 'مفتوحة' : 'مغلقة');
     });
     
-    // إغلاق عند النقر على أي رابط
     nav.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             toggle.classList.remove('active');
             nav.classList.remove('active');
-            console.log("🔒 أُغلقت القائمة عند النقر على رابط");
-        });
-    });
-    
-    // إغلاق عند النقر خارج القائمة
-    document.addEventListener('click', (e) => {
-        if (!nav.contains(e.target) && !toggle.contains(e.target)) {
-            toggle.classList.remove('active');
-            nav.classList.remove('active');
-        }
-    });
-}
-
-
-// ==========================================
-// 3. القائمة المنسدلة (Dropdown)
-// ==========================================
-function initDropdowns() {
-    document.querySelectorAll('.dropdown').forEach(dropdown => {
-        const toggle = dropdown.querySelector('.dropdown-toggle');
-        if (toggle) {
-            toggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 968) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    dropdown.classList.toggle('active');
-                }
-            });
-        }
-    });
-}
-
-// ==========================================
-// 4. تصغير الهيدر عند التمرير
-// ==========================================
-function initHeaderScroll() {
-    const header = document.getElementById('mainHeader');
-    if (header) {
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('scrolled', window.scrollY > 50);
-        });
-    }
-}
-
-// ==========================================
-// 5. التمرير الناعم للروابط الداخلية
-// ==========================================
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#' || targetId.length < 2) return;
-            const target = document.querySelector(targetId);
-            if (target) {
-                e.preventDefault();
-                const header = document.getElementById('mainHeader');
-                const offset = header ? header.offsetHeight + 20 : 100;
-                const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-                window.scrollTo({ top, behavior: 'smooth' });
-            }
         });
     });
 }
 
-// ==========================================
-// 6. نموذج الاتصال (Contact Form) - يعمل 100%
-// ==========================================
-
-// ==========================================
-// 6. نموذج الاتصال (Contact Form) - نسخة مضمونة
-// ==========================================
-// ==========================================
-// 6. نموذج الاتصال (Contact Form) - فتح الإيميل فقط (بدون Firebase)
-// ==========================================
-// ==========================================
-// 6. نموذج الاتصال - ذكي للهاتف والكمبيوتر
-// ==========================================
+// نموذج الاتصال - mailto فقط
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) return;
@@ -165,166 +80,64 @@ function initContactForm() {
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         
-        // التحقق إذا كان المستخدم على هاتف
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري المعالجة...';
+        submitBtn.innerHTML = 'جاري الفتح...';
         
-        if (isMobile) {
-            // على الهاتف: عرض خيارات متعددة
-            showMobileEmailOptions(name, email, message, submitBtn, originalText);
-        } else {
-            // على الكمبيوتر: فتح mailto مباشرة
-            openMailto(name, email, message);
-            submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم فتح البريد ✓';
-            submitBtn.style.backgroundColor = '#28a745';
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.style.backgroundColor = '';
-                submitBtn.disabled = false;
-                form.reset();
-            }, 3000);
-        }
-    });
-}
-
-// دالة مساعدة لفتح mailto
-function openMailto(name, email, message) {
-    const receiverEmail = 'alsayed0852.as@gmail.com';
-    const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
-    const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
-    window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
-}
-
-// دالة للهواتف: عرض خيارات متعددة
-function showMobileEmailOptions(name, email, message, submitBtn, originalText) {
-    const receiverEmail = 'alsayed0852.as@gmail.com';
-    const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
-    const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
-    
-    // إنشاء نافذة منبثقة بخيارات
-    const options = confirm(
-        `📧 اختر طريقة الإرسال:\n\n` +
-        `✅ موافق: فتح Gmail/Outlook في المتصفح\n` +
-        ` إلغاء: نسخ البيانات يدوياً`
-    );
-    
-    if (options) {
-        // محاولة فتح Gmail أو Outlook
-        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${receiverEmail}&su=${subject}&body=${body}`;
-        window.open(gmailLink, '_blank');
+        const receiverEmail = 'alsayed0852.as@gmail.com';
+        const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
+        const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
         
-        submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم الفتح ✓';
+        window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
+        
+        submitBtn.innerHTML = '✓ تم الفتح';
         submitBtn.style.backgroundColor = '#28a745';
         
         setTimeout(() => {
             submitBtn.innerHTML = originalText;
             submitBtn.style.backgroundColor = '';
             submitBtn.disabled = false;
-            document.getElementById('contactForm').reset();
+            form.reset();
         }, 3000);
-    } else {
-        // نسخ البيانات للحافظة
-        const textToCopy = `إلى: ${receiverEmail}\nالموضوع: طلب تواصل جديد من: ${name}\n\nالاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
-        
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            alert('✅ تم نسخ الرسالة! الآن يمكنك لصقها في أي تطبيق بريد.');
-            submitBtn.innerHTML = '<i class="bi bi-clipboard-check"></i> تم النسخ ✓';
-            submitBtn.style.backgroundColor = '#17a2b8';
-            
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.style.backgroundColor = '';
-                submitBtn.disabled = false;
-                document.getElementById('contactForm').reset();
-            }, 4000);
-        }).catch(() => {
-            alert('يرجى نسخ البيانات يدوياً:\n\n' + textToCopy);
+    });
+}
+
+// Scroll Reveal
+function initScrollReveal() {
+    document.querySelectorAll('.fade-up').forEach(el => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        observer.observe(el);
+    });
+}
+
+// تصغير الهيدر
+function initHeaderScroll() {
+    const header = document.getElementById('mainHeader');
+    if (header) {
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
         });
     }
 }
-// ==========================================
-// 8. تبديل اللغة في صفحة تفاصيل المنتج
-// ==========================================
-// ==========================================
-// 8. تبديل اللغة الذكي - يعمل في كل الصفحات
-// ==========================================
-// ==========================================
-// 8. تبديل اللغة الذكي - يعمل مع أو بدون .html
-// ==========================================
-// ==========================================
-// 8. تبديل اللغة الذكي - تطابق تام في نهاية المسار
-// ==========================================
-function initLanguageSwitcher() {
-    const langSwitcher = document.getElementById('langSwitcher');
-    if (!langSwitcher) return;
-    
-    const currentPath = window.location.pathname;
-    const currentSearch = window.location.search;
-    const baseUrl = window.location.origin;
-    
-    // نزيل .html للتعامل الموحد
-    const pathClean = currentPath.replace('.html', '');
-    
-    console.log("🔍 المسار الحالي:", pathClean);
-    
-    // خريطة التحويل - الترتيب مهم: الأطول أولاً
-    const pageMap = [
-        { from: 'product-detail-en', to: 'product-detail' },
-        { from: 'product-detail', to: 'product-detail-en' },
-        { from: 'products-en', to: 'products' },
-        { from: 'products', to: 'products-en' },
-        { from: 'about-en', to: 'about' },
-        { from: 'about', to: 'about-en' },
-        { from: 'contact-en', to: 'contact' },
-        { from: 'contact', to: 'contact-en' },
-        { from: 'en', to: 'index' },
-        { from: 'index', to: 'en' }
-    ];
-    
-    let matched = null;
-    
-    // نبحث عن التطابق التام في نهاية المسار
-    for (const { from, to } of pageMap) {
-        if (pathClean.endsWith('/' + from) || pathClean === '/' + from) {
-            matched = { from, to };
-            break;
-        }
-    }
-    
-    if (!matched) {
-        console.warn("⚠️ لم يتم العثور على تطابق");
-        return;
-    }
-    
-    // نستبدل فقط الجزء المطابق في النهاية
-    const newPath = pathClean.replace(new RegExp(matched.from + '$'), matched.to) + '.html';
-    const newUrl = baseUrl + newPath + currentSearch;
-    
-    langSwitcher.href = newUrl;
-    console.log(`🔄 ${matched.from} → ${matched.to}`);
-    console.log("✅ الرابط الجديد:", newUrl);
-}
-// ==========================================
-// التشغيل - ننتظر حتى يصبح DOM جاهزاً تماماً
-// ==========================================
+
+// التشغيل
 function initAll() {
     console.log("🚀 بدء تهيئة الموقع...");
     loadSiteSettings();
     initMobileMenu();
-    initDropdowns();
-    initHeaderScroll();
-    initSmoothScroll();
     initContactForm();
     initScrollReveal();
-    initLanguageSwitcher();
+    initHeaderScroll();
     console.log("✅ اكتملت التهيئة");
 }
 
-// نستخدم window.onload لضمان تحميل كل شيء
-window.addEventListener('load', initAll);
-// احتياطي: DOMContentLoaded أيضاً
+// انتظر تحميل الصفحة
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAll);
 } else {
