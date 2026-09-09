@@ -213,29 +213,58 @@ function initScrollReveal() {
 // ==========================================
 // 8. تبديل اللغة في صفحة تفاصيل المنتج
 // ==========================================
+// ==========================================
+// 8. تبديل اللغة الذكي - يعمل في كل الصفحات
+// ==========================================
 function initLanguageSwitcher() {
     const langSwitcher = document.getElementById('langSwitcher');
-    if (!langSwitcher) return;
-    
-    const currentUrl = new URL(window.location.href);
-    const pathname = currentUrl.pathname;
-    
-    let newPath = pathname;
-    if (pathname.includes('product-detail-en.html')) {
-        newPath = pathname.replace('product-detail-en.html', 'product-detail.html');
-    } else if (pathname.includes('product-detail.html')) {
-        newPath = pathname.replace('product-detail.html', 'product-detail-en.html');
-    } else if (pathname.includes('products-en.html')) {
-        newPath = pathname.replace('products-en.html', 'products.html');
-    } else if (pathname.includes('products.html')) {
-        newPath = pathname.replace('products.html', 'products-en.html');
+    if (!langSwitcher) {
+        console.log("⚠️ لا يوجد زر تبديل لغة في هذه الصفحة");
+        return;
     }
     
-    const newUrl = new URL(newPath, currentUrl.origin);
-    newUrl.search = currentUrl.search;
-    langSwitcher.href = newUrl.toString();
+    const currentUrl = window.location.href;
+    const currentPath = window.location.pathname;
+    const currentSearch = window.location.search; // يحفظ ?id=... أو ?category=...
     
-    console.log("🌐 رابط تبديل اللغة:", langSwitcher.href);
+    // خريطة التحويل بين العربية والإنجليزية
+    const pageMap = {
+        'index.html': 'en.html',
+        'en.html': 'index.html',
+        'products.html': 'products-en.html',
+        'products-en.html': 'products.html',
+        'about.html': 'about-en.html',
+        'about-en.html': 'about.html',
+        'contact.html': 'contact-en.html',
+        'contact-en.html': 'contact.html',
+        'product-detail.html': 'product-detail-en.html',
+        'product-detail-en.html': 'product-detail.html'
+    };
+    
+    let newPath = currentPath;
+    let found = false;
+    
+    // البحث عن الصفحة الحالية في الخريطة
+    for (const [arPage, enPage] of Object.entries(pageMap)) {
+        if (currentPath.includes(arPage)) {
+            newPath = currentPath.replace(arPage, enPage);
+            found = true;
+            console.log(`🔄 التبديل من ${arPage} إلى ${enPage}`);
+            break;
+        }
+    }
+    
+    if (!found) {
+        console.warn("⚠️ الصفحة الحالية غير موجودة في خريطة التبديل");
+        return;
+    }
+    
+    // بناء الرابط الجديد مع الحفاظ على المعاملات (?id=... أو ?category=...)
+    const baseUrl = window.location.origin;
+    const newUrl = baseUrl + newPath + currentSearch;
+    
+    langSwitcher.href = newUrl;
+    console.log("✅ رابط تبديل اللغة:", newUrl);
 }
 
 // ==========================================
