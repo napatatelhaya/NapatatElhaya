@@ -48,12 +48,20 @@ function initMobileMenu() {
     const toggle = document.getElementById('mobileToggle');
     const nav = document.getElementById('mainNav');
     
-    if (!toggle || !nav) return;
+    if (!toggle || !nav) {
+        console.log("⚠️ عناصر القائمة غير موجودة:", { toggle: !!toggle, nav: !!nav });
+        return;
+    }
     
+    console.log("✅ تم العثور على عناصر القائمة");
+    
+    // فتح/إغلاق عند النقر على الزر
     toggle.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         toggle.classList.toggle('active');
         nav.classList.toggle('active');
+        console.log("🍔 القائمة:", nav.classList.contains('active') ? 'مفتوحة' : 'مغلقة');
     });
     
     // إغلاق عند النقر على أي رابط
@@ -61,6 +69,7 @@ function initMobileMenu() {
         link.addEventListener('click', () => {
             toggle.classList.remove('active');
             nav.classList.remove('active');
+            console.log("🔒 أُغلقت القائمة عند النقر على رابط");
         });
     });
     
@@ -72,6 +81,7 @@ function initMobileMenu() {
         }
     });
 }
+
 
 // ==========================================
 // 3. القائمة المنسدلة (Dropdown)
@@ -126,9 +136,13 @@ function initSmoothScroll() {
 // ==========================================
 // 6. نموذج الاتصال (Contact Form) - يعمل 100%
 // ==========================================
+
 function initContactForm() {
     const form = document.getElementById('contactForm');
-    if (!form) return;
+    if (!form) {
+        console.log("⚠️ نموذج الاتصال غير موجود في هذه الصفحة");
+        return;
+    }
     
     console.log("✅ تم العثور على نموذج الاتصال");
     
@@ -139,7 +153,7 @@ function initContactForm() {
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn ? submitBtn.innerHTML : '';
         
-        // البحث المرن عن الحقول
+        // البحث عن الحقول
         const nameInput = form.querySelector('#clientName, input[name="name"], input[type="text"]');
         const emailInput = form.querySelector('#clientEmail, input[name="email"], input[type="email"]');
         const messageInput = form.querySelector('#clientMessage, textarea[name="message"], textarea');
@@ -148,7 +162,7 @@ function initContactForm() {
         const email = emailInput ? emailInput.value.trim() : '';
         const message = messageInput ? messageInput.value.trim() : '';
         
-        console.log(" بيانات النموذج:", { name, email, message });
+        console.log("📝 بيانات النموذج:", { name, email, message });
         
         if (!name || !email || !message) {
             alert('يرجى ملء جميع الحقول');
@@ -157,34 +171,57 @@ function initContactForm() {
         
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = 'جاري الإرسال...';
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الإرسال...';
         }
         
         try {
-            // الحفظ في Firebase
+            // 1. الحفظ في Firebase
             await addDoc(collection(db, 'inquiries'), {
-                name, email, message,
+                name: name,
+                email: email,
+                message: message,
                 createdAt: serverTimestamp()
             });
             
-            // فتح mailto
-            const subject = encodeURIComponent(`طلب تواصل جديد من ${name}`);
-            const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
-            window.location.href = `mailto:alsayed0852.as@gmail.com?subject=${subject}&body=${body}`;
+            console.log("✅ تم الحفظ في قاعدة البيانات");
             
+            // 2. فتح mailto - الطريقة المضمونة
+            const receiverEmail = 'alsayed0852.as@gmail.com';
+            const subject = `طلب تواصل جديد من ${name}`;
+            const body = `الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
+            
+            const mailtoLink = `mailto:${encodeURIComponent(receiverEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            console.log(" فتح mailto:", mailtoLink);
+            
+            // استخدام window.open بدلاً من window.location.href
+            const mailWindow = window.open(mailtoLink, '_self');
+            
+            // إذا فشل الفتح، نستخدم window.location
+            setTimeout(() => {
+                if (!mailWindow || mailWindow.closed) {
+                    console.log("⚠️ لم يفتح mailto، استخدام window.location");
+                    window.location.href = mailtoLink;
+                }
+            }, 100);
+            
+            // 3. تحديث الواجهة
             if (submitBtn) {
-                submitBtn.innerHTML = '✓ تم الإرسال بنجاح';
+                submitBtn.innerHTML = '<i class="bi bi-check-circle"></i> ✓ تم الإرسال بنجاح';
                 submitBtn.style.backgroundColor = '#28a745';
+                
                 setTimeout(() => {
                     submitBtn.innerHTML = originalText;
                     submitBtn.style.backgroundColor = '';
                     submitBtn.disabled = false;
                     form.reset();
-                }, 3000);
+                }, 4000);
             }
+            
         } catch (error) {
-            console.error("خطأ:", error);
-            alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+            console.error("❌ خطأ في الإرسال:", error);
+            alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى أو التواصل عبر واتساب.');
+            
             if (submitBtn) {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
