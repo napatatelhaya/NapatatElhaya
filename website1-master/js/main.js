@@ -137,6 +137,7 @@ function initSmoothScroll() {
 // 6. نموذج الاتصال (Contact Form) - يعمل 100%
 // ==========================================
 
+
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) {
