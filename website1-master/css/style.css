@@ -1133,3 +1133,95 @@ html[dir="ltr"] .dropdown-menu li a { text-align: left; }
 html[dir="ltr"] .dropdown-menu li a {
     text-align: left;
 }
+/* ===== البرجر منيو - إلزامي للهاتف ===== */
+.mobile-toggle {
+    display: none !important;
+}
+
+@media (max-width: 968px) {
+    .mobile-toggle {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 21px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 1002;
+        padding: 0;
+    }
+    
+    .mobile-toggle span {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: var(--white);
+        border-radius: 3px;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .mobile-toggle.active span:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+    }
+    .mobile-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-toggle.active span:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+    }
+    
+    #mainNav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 350px;
+        height: 100vh;
+        background-color: var(--green-dark);
+        z-index: 1001;
+        transition: right 0.4s ease;
+        box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+        padding-top: 80px;
+    }
+    
+    html[dir="ltr"] #mainNav {
+        right: auto;
+        left: -100%;
+        transition: left 0.4s ease;
+        box-shadow: 5px 0 25px rgba(0,0,0,0.3);
+    }
+    
+    #mainNav.active {
+        right: 0;
+    }
+    
+    html[dir="ltr"] #mainNav.active {
+        left: 0;
+    }
+    
+    #navMenu {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 30px;
+        gap: 20px;
+        list-style: none;
+    }
+    
+    #navMenu li {
+        width: 100%;
+        text-align: right;
+    }
+    
+    html[dir="ltr"] #navMenu li {
+        text-align: left;
+    }
+    
+    #navMenu a {
+        font-size: 18px;
+        display: block;
+        padding: 10px 0;
+        color: var(--white) !important;
+    }
+}
