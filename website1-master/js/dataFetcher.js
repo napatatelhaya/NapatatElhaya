@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// ✅ مفاتيح Firebase الجديدة
 const firebaseConfig = {
     apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
     authDomain: "napataelhaya.firebaseapp.com",
@@ -39,7 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        // حفظ المعرف الحقيقي للمستند لربطه بصفحة التفاصيل
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             data.docId = doc.id; 
@@ -95,7 +93,9 @@ function renderProducts(category, isArabic) {
         const linkText = isArabic ? 'استفسار ←' : 'Inquire →';
         const viewText = isArabic ? 'عرض التفاصيل' : 'View Details';
 
-        const detailUrl = `product-detail.html?id=${product.docId}`;
+        // ✅ الحل: اختيار صفحة التفاصيل بناءً على لغة الصفحة الحالية
+        const detailPage = isArabic ? 'product-detail.html' : 'product-detail-en.html';
+        const detailUrl = `${detailPage}?id=${product.docId}`;
 
         const productCard = `
             <div class="product-card fade-in visible">
