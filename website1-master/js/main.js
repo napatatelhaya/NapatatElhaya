@@ -137,7 +137,9 @@ function initSmoothScroll() {
 // 6. نموذج الاتصال (Contact Form) - يعمل 100%
 // ==========================================
 
-
+// ==========================================
+// 6. نموذج الاتصال (Contact Form) - نسخة مضمونة
+// ==========================================
 function initContactForm() {
     const form = document.getElementById('contactForm');
     if (!form) {
@@ -163,7 +165,7 @@ function initContactForm() {
         const email = emailInput ? emailInput.value.trim() : '';
         const message = messageInput ? messageInput.value.trim() : '';
         
-        console.log("📝 بيانات النموذج:", { name, email, message });
+        console.log("📝 البيانات:", { name, email, message });
         
         if (!name || !email || !message) {
             alert('يرجى ملء جميع الحقول');
@@ -184,27 +186,17 @@ function initContactForm() {
                 createdAt: serverTimestamp()
             });
             
-            console.log("✅ تم الحفظ في قاعدة البيانات");
+            console.log("✅ تم الحفظ في Firebase");
             
-            // 2. فتح mailto - الطريقة المضمونة
+            // 2. فتح mailto
             const receiverEmail = 'alsayed0852.as@gmail.com';
             const subject = `طلب تواصل جديد من ${name}`;
             const body = `الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
             
             const mailtoLink = `mailto:${encodeURIComponent(receiverEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             
-            console.log(" فتح mailto:", mailtoLink);
-            
-            // استخدام window.open بدلاً من window.location.href
-            const mailWindow = window.open(mailtoLink, '_self');
-            
-            // إذا فشل الفتح، نستخدم window.location
-            setTimeout(() => {
-                if (!mailWindow || mailWindow.closed) {
-                    console.log("⚠️ لم يفتح mailto، استخدام window.location");
-                    window.location.href = mailtoLink;
-                }
-            }, 100);
+            // استخدام window.location لضمان الفتح
+            window.location.href = mailtoLink;
             
             // 3. تحديث الواجهة
             if (submitBtn) {
@@ -220,8 +212,17 @@ function initContactForm() {
             }
             
         } catch (error) {
-            console.error("❌ خطأ في الإرسال:", error);
-            alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى أو التواصل عبر واتساب.');
+            console.error("❌ خطأ مفصل:", error);
+            console.error("Error code:", error.code);
+            console.error("Error message:", error.message);
+            
+            // محاولة فتح mailto حتى لو فشل Firebase
+            const receiverEmail = 'alsayed0852.as@gmail.com';
+            const subject = `طلب تواصل جديد من ${name}`;
+            const body = `الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
+            window.location.href = `mailto:${encodeURIComponent(receiverEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            alert('تم فتح برنامج الإيميل. ملاحظة: لم يتم الحفظ في قاعدة البيانات.');
             
             if (submitBtn) {
                 submitBtn.innerHTML = originalText;
@@ -230,6 +231,7 @@ function initContactForm() {
         }
     });
 }
+
 
 // ==========================================
 // 7. Scroll Reveal (الأنيميشن)
