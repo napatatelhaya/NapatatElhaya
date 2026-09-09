@@ -1,9 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getFirestore, doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-// ==========================================
-// 1. تهيئة Firebase (تم إصلاح الهيكل المقطوع)
-// ==========================================
 const firebaseConfig = {
     apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
     authDomain: "napataelhaya.firebaseapp.com",
@@ -18,51 +15,66 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================
-// 2. تحميل إعدادات الموقع (اللوجو والاسم)
+// 1. تحميل الإعدادات (مُحسّن للسرعة القصوى مع التخزين المؤقت)
 // ==========================================
 async function loadSiteSettings() {
+    // أ: التحقق من الذاكرة المؤقتة أولاً (تحميل فوري)
+    const cachedSettings = sessionStorage.getItem('siteSettings');
+    if (cachedSettings) {
+        applySettingsToDOM(JSON.parse(cachedSettings));
+        return;
+    }
+
+    // ب: إذا لم تكن في الذاكرة، جلبها من Firebase مع مهلة زمنية (3 ثوانٍ كحد أقصى)
     try {
-        const snap = await getDoc(doc(db, 'settings', 'general'));
+        const fetchPromise = getDoc(doc(db, 'settings', 'general'));
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
+        
+        const snap = await Promise.race([fetchPromise, timeoutPromise]);
+        
         if (snap.exists()) {
             const data = snap.data();
-            if (data.logo) {
-                document.querySelectorAll('.logo-icon').forEach(el => {
-                    el.innerHTML = `<img src="${data.logo}" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
-                });
-            }
-            const isAr = document.documentElement.lang === 'ar';
-            const name = isAr ? data.companyNameAr : data.companyNameEn;
-            if (name) {
-                document.querySelectorAll('.logo-text').forEach(el => {
-                    const parts = name.trim().split(' ');
-                    el.innerHTML = `${parts[0]} <span>${parts.slice(1).join(' ')}</span>`;
-                });
-            }
+            sessionStorage.setItem('siteSettings', JSON.stringify(data)); // حفظ في الذاكرة للزيارات القادمة
+            applySettingsToDOM(data);
         }
     } catch (error) {
-        console.error("خطأ في تحميل الإعدادات:", error);
+        console.warn("⚠️ تم استخدام الإعدادات الافتراضية بسبب بطء الشبكة أو انقطاعها:", error);
+    }
+}
+
+// دالة مساعدة لتطبيق البيانات على الصفحة
+function applySettingsToDOM(data) {
+    if (data.logo) {
+        document.querySelectorAll('.logo-icon').forEach(el => {
+            el.innerHTML = `<img src="${data.logo}" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+        });
+    }
+    const isAr = document.documentElement.lang === 'ar';
+    const name = isAr ? data.companyNameAr : data.companyNameEn;
+    if (name) {
+        document.querySelectorAll('.logo-text').forEach(el => {
+            const parts = name.trim().split(' ');
+            el.innerHTML = `${parts[0]} <span>${parts.slice(1).join(' ')}</span>`;
+        });
     }
 }
 
 // ==========================================
-// 3. قائمة الجوال (مع رسائل تتبع لتشخيص مشكلة صفحات المنتجات)
+// 2. قائمة الجوال
 // ==========================================
 function initMobileMenu() {
     const toggle = document.getElementById('mobileToggle');
     const nav = document.getElementById('mainNav');
     
     if (!toggle || !nav) {
-        console.warn("⚠️ عناصر القائمة غير موجودة! تأكد من وجود id='mobileToggle' و id='mainNav' في الهيدر.");
+        console.warn("⚠️ عناصر القائمة غير موجودة في هذا الصفحة.");
         return;
     }
-    
-    console.log("✅ تم تهيئة البرجر منيو بنجاح");
     
     toggle.addEventListener('click', (e) => {
         e.stopPropagation();
         toggle.classList.toggle('active');
         nav.classList.toggle('active');
-        console.log("🍔 حالة القائمة:", nav.classList.contains('active') ? 'مفتوحة' : 'مغلقة');
     });
     
     nav.querySelectorAll('a').forEach(link => {
@@ -74,46 +86,28 @@ function initMobileMenu() {
 }
 
 // ==========================================
-// 4. نموذج الاتصال (نسخة مضمونة 100% - mailto فقط)
+// 3. نموذج الاتصال (سريع ومباشر)
 // ==========================================
 function initContactForm() {
     const form = document.getElementById('contactForm');
-    
-    if (!form) {
-        console.log("ℹ️ نموذج الاتصال غير موجود في هذه الصفحة (طبيعي في الصفحات غير صفحة التواصل)");
-        return;
-    }
-    
-    console.log("✅ تم العثور على نموذج الاتصال بنجاح");
+    if (!form) return;
     
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
-        console.log("📝 تم الضغط على زر الإرسال");
-        
         const nameInput = document.getElementById('clientName');
         const emailInput = document.getElementById('clientEmail');
         const messageInput = document.getElementById('clientMessage');
         
-        if (!nameInput || !emailInput || !messageInput) {
-            console.error("❌ أحد الحقول مفقود:", {
-                name: !!nameInput,
-                email: !!emailInput,
-                message: !!messageInput
-            });
-            alert('خطأ في الحقول. يرجى تحديث الصفحة.');
-            return;
-        }
+        if (!nameInput || !emailInput || !messageInput) return;
         
         const name = nameInput.value.trim();
         const email = emailInput.value.trim();
         const message = messageInput.value.trim();
         
-        console.log("📋 البيانات:", { name, email, message });
-        
         if (!name || !email || !message) {
-            alert('⚠️ يرجى ملء جميع الحقول المطلوبة');
+            alert('يرجى ملء جميع الحقول المطلوبة');
             return;
         }
         
@@ -122,7 +116,7 @@ function initContactForm() {
         
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الفتح...';
+            submitBtn.innerHTML = 'جاري الفتح...';
         }
         
         const receiverEmail = 'alsayed0852.as@gmail.com';
@@ -130,35 +124,23 @@ function initContactForm() {
         const body = encodeURIComponent(`الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`);
         const mailtoLink = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
         
-        console.log("📧 رابط mailto:", mailtoLink);
-        
-        try {
-            window.location.href = mailtoLink;
-            console.log("✅ تم فتح mailto بنجاح");
-        } catch (error) {
-            console.error("❌ فشل فتح mailto:", error);
-            alert('حدث خطأ. يرجى إرسال الإيميل يدوياً إلى: ' + receiverEmail);
-        }
+        window.location.href = mailtoLink;
         
         if (submitBtn) {
-            submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم الفتح ✓';
+            submitBtn.innerHTML = '✓ تم الفتح';
             submitBtn.style.backgroundColor = '#28a745';
-            submitBtn.style.color = '#fff';
-            
             setTimeout(() => {
                 submitBtn.innerHTML = originalText;
                 submitBtn.style.backgroundColor = '';
-                submitBtn.style.color = '';
                 submitBtn.disabled = false;
                 form.reset();
-                console.log("🔄 تم إعادة تعيين النموذج");
             }, 3000);
         }
     });
 }
 
 // ==========================================
-// 5. مراقب التمرير (Scroll Reveal)
+// 4. الأنيميشن (Scroll Reveal)
 // ==========================================
 function initScrollReveal() {
     document.querySelectorAll('.fade-up').forEach(el => {
@@ -169,38 +151,33 @@ function initScrollReveal() {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.15 });
+        }, { threshold: 0.1 }); // خفضنا النسبة قليلاً لتسريع ظهور العنصر
         observer.observe(el);
     });
 }
 
 // ==========================================
-// 6. تصغير الهيدر عند التمرير
+// 5. تصغير الهيدر
 // ==========================================
 function initHeaderScroll() {
     const header = document.getElementById('mainHeader');
     if (header) {
         window.addEventListener('scroll', () => {
             header.classList.toggle('scrolled', window.scrollY > 50);
-        });
+        }, { passive: true }); // إضافة passive: true لتحسين أداء التمرير
     }
 }
 
 // ==========================================
-// 7. تبديل اللغة الذكي (يعمل مع/بدون .html)
+// 6. تبديل اللغة الذكي
 // ==========================================
 function initLanguageSwitcher() {
     const langSwitcher = document.getElementById('langSwitcher');
-    if (!langSwitcher) {
-        console.log("ℹ️ لا يوجد زر لغة في هذه الصفحة");
-        return;
-    }
+    if (!langSwitcher) return;
     
     const currentPath = window.location.pathname;
     const currentSearch = window.location.search;
     const baseUrl = window.location.origin;
-    
-    console.log("🔍 المسار الحالي:", currentPath);
     
     const pageMap = [
         { from: 'product-detail-en', to: 'product-detail' },
@@ -216,52 +193,39 @@ function initLanguageSwitcher() {
     ];
     
     let newPath = null;
-    let matchedPage = null;
-    
     const pathParts = currentPath.split('/');
     const lastPart = pathParts[pathParts.length - 1].replace('.html', '');
-    
-    console.log("📄 الجزء الأخير من المسار:", lastPart);
     
     for (const { from, to } of pageMap) {
         if (lastPart === from || lastPart.includes(from)) {
             newPath = currentPath.replace(from, to);
-            matchedPage = from;
-            console.log(`✅ تم العثور على تطابق: ${from} → ${to}`);
             break;
         }
     }
     
-    if (!newPath) {
-        console.warn("⚠️ لم يتم العثور على صفحة مطابقة");
-        return;
+    if (newPath) {
+        if (!newPath.endsWith('.html')) newPath += '.html';
+        langSwitcher.href = baseUrl + newPath + currentSearch;
     }
-    
-    if (!newPath.endsWith('.html')) {
-        newPath += '.html';
-    }
-    
-    const newUrl = baseUrl + newPath + currentSearch;
-    langSwitcher.href = newUrl;
-    console.log(`🔄 ${matchedPage} → الرابط الجديد:`, newUrl);
 }
 
 // ==========================================
-// 8. تشغيل كل الوظائف عند جاهزية الصفحة
+// 7. التشغيل (غير متزامن لعدم حظر تحميل الصفحة)
 // ==========================================
 function initAll() {
-    console.log("🚀 بدء تهيئة الموقع...");
-    loadSiteSettings();
+    loadSiteSettings(); // يعمل في الخلفية ولا يوقف تحميل الصفحة
     initMobileMenu();
     initContactForm();
     initScrollReveal();
     initHeaderScroll();
-    initLanguageSwitcher(); // تم إضافة دالة تبديل اللغة هنا
-    console.log("✅ اكتملت التهيئة بنجاح");
+    initLanguageSwitcher();
 }
 
+// استخدام requestAnimationFrame لضمان عدم إعاقة رسم الصفحة
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll);
+    document.addEventListener('DOMContentLoaded', () => {
+        requestAnimationFrame(initAll);
+    });
 } else {
-    initAll();
+    requestAnimationFrame(initAll);
 }
