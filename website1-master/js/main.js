@@ -15,34 +15,28 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================
-// 1. تحميل الإعدادات (مُحسّن للسرعة القصوى مع التخزين المؤقت)
+// 1. تحميل الإعدادات (سريع مع التخزين المؤقت)
 // ==========================================
 async function loadSiteSettings() {
-    // أ: التحقق من الذاكرة المؤقتة أولاً (تحميل فوري)
     const cachedSettings = sessionStorage.getItem('siteSettings');
     if (cachedSettings) {
         applySettingsToDOM(JSON.parse(cachedSettings));
         return;
     }
-
-    // ب: إذا لم تكن في الذاكرة، جلبها من Firebase مع مهلة زمنية (3 ثوانٍ كحد أقصى)
     try {
         const fetchPromise = getDoc(doc(db, 'settings', 'general'));
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
-        
         const snap = await Promise.race([fetchPromise, timeoutPromise]);
-        
         if (snap.exists()) {
             const data = snap.data();
-            sessionStorage.setItem('siteSettings', JSON.stringify(data)); // حفظ في الذاكرة للزيارات القادمة
+            sessionStorage.setItem('siteSettings', JSON.stringify(data));
             applySettingsToDOM(data);
         }
     } catch (error) {
-        console.warn("⚠️ تم استخدام الإعدادات الافتراضية بسبب بطء الشبكة أو انقطاعها:", error);
+        console.warn("⚠️ تم استخدام الإعدادات الافتراضية بسبب بطء الشبكة:", error);
     }
 }
 
-// دالة مساعدة لتطبيق البيانات على الصفحة
 function applySettingsToDOM(data) {
     if (data.logo) {
         document.querySelectorAll('.logo-icon').forEach(el => {
@@ -60,16 +54,12 @@ function applySettingsToDOM(data) {
 }
 
 // ==========================================
-// 2. قائمة الجوال
+// 2. قائمة الجوال (البرجر منيو)
 // ==========================================
 function initMobileMenu() {
     const toggle = document.getElementById('mobileToggle');
     const nav = document.getElementById('mainNav');
-    
-    if (!toggle || !nav) {
-        console.warn("⚠️ عناصر القائمة غير موجودة في هذا الصفحة.");
-        return;
-    }
+    if (!toggle || !nav) return;
     
     toggle.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -77,7 +67,8 @@ function initMobileMenu() {
         nav.classList.toggle('active');
     });
     
-    nav.querySelectorAll('a').forEach(link => {
+    // إغلاق القائمة عند النقر على أي رابط
+    nav.querySelectorAll('a:not(.dropdown-toggle)').forEach(link => {
         link.addEventListener('click', () => {
             toggle.classList.remove('active');
             nav.classList.remove('active');
@@ -86,7 +77,41 @@ function initMobileMenu() {
 }
 
 // ==========================================
-// 3. نموذج الاتصال (سريع ومباشر)
+// 3. القائمة المنسدلة في الهاتف (الحل الجديد)
+// ==========================================
+function initMobileDropdowns() {
+    const dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.dropdown-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', function(e) {
+                // تفعيل هذا السلوك فقط على شاشات الهاتف (أقل من 968px)
+                if (window.innerWidth <= 968) {
+                    e.preventDefault(); // منع الانتقال للرابط
+                    e.stopPropagation(); // منع إغلاق القائمة الرئيسية فوراً
+                    
+                    // إغلاق أي قوائم منسدلة أخرى مفتوحة
+                    dropdowns.forEach(d => {
+                        if (d !== dropdown) d.classList.remove('active');
+                    });
+                    
+                    // تبديل حالة القائمة الحالية (فتح/إغلاق)
+                    dropdown.classList.toggle('active');
+                }
+            });
+        }
+    });
+
+    // إغلاق القوائم المنسدلة عند النقر في أي مكان خارجها
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+        }
+    });
+}
+
+// ==========================================
+// 4. نموذج الاتصال (mailto فقط)
 // ==========================================
 function initContactForm() {
     const form = document.getElementById('contactForm');
@@ -122,9 +147,8 @@ function initContactForm() {
         const receiverEmail = 'alsayed0852.as@gmail.com';
         const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
         const body = encodeURIComponent(`الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`);
-        const mailtoLink = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
         
-        window.location.href = mailtoLink;
+        window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
         
         if (submitBtn) {
             submitBtn.innerHTML = '✓ تم الفتح';
@@ -140,7 +164,7 @@ function initContactForm() {
 }
 
 // ==========================================
-// 4. الأنيميشن (Scroll Reveal)
+// 5. الأنيميشن وتصغير الهيدر
 // ==========================================
 function initScrollReveal() {
     document.querySelectorAll('.fade-up').forEach(el => {
@@ -151,20 +175,17 @@ function initScrollReveal() {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1 }); // خفضنا النسبة قليلاً لتسريع ظهور العنصر
+        }, { threshold: 0.1 });
         observer.observe(el);
     });
 }
 
-// ==========================================
-// 5. تصغير الهيدر
-// ==========================================
 function initHeaderScroll() {
     const header = document.getElementById('mainHeader');
     if (header) {
         window.addEventListener('scroll', () => {
             header.classList.toggle('scrolled', window.scrollY > 50);
-        }, { passive: true }); // إضافة passive: true لتحسين أداء التمرير
+        }, { passive: true });
     }
 }
 
@@ -210,22 +231,20 @@ function initLanguageSwitcher() {
 }
 
 // ==========================================
-// 7. التشغيل (غير متزامن لعدم حظر تحميل الصفحة)
+// 7. التشغيل
 // ==========================================
 function initAll() {
-    loadSiteSettings(); // يعمل في الخلفية ولا يوقف تحميل الصفحة
+    loadSiteSettings();
     initMobileMenu();
+    initMobileDropdowns(); // تفعيل منطق القائمة المنسدلة للهاتف
     initContactForm();
     initScrollReveal();
     initHeaderScroll();
     initLanguageSwitcher();
 }
 
-// استخدام requestAnimationFrame لضمان عدم إعاقة رسم الصفحة
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        requestAnimationFrame(initAll);
-    });
+    document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(initAll));
 } else {
     requestAnimationFrame(initAll);
 }
