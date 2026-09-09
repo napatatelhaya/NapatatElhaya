@@ -61,43 +61,91 @@ function initMobileMenu() {
 }
 
 // نموذج الاتصال - mailto فقط
+// ==========================================
+// 6. نموذج الاتصال - نسخة مضمونة 100%
+// ==========================================
 function initContactForm() {
     const form = document.getElementById('contactForm');
-    if (!form) return;
+    
+    if (!form) {
+        console.log("️ نموذج الاتصال غير موجود في هذه الصفحة (هذا طبيعي في صفحات غير contact)");
+        return;
+    }
+    
+    console.log("✅ تم العثور على نموذج الاتصال بنجاح");
     
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+        e.stopPropagation();
         
-        const name = document.getElementById('clientName').value.trim();
-        const email = document.getElementById('clientEmail').value.trim();
-        const message = document.getElementById('clientMessage').value.trim();
+        console.log("📝 تم الضغط على زر الإرسال");
+        
+        const nameInput = document.getElementById('clientName');
+        const emailInput = document.getElementById('clientEmail');
+        const messageInput = document.getElementById('clientMessage');
+        
+        if (!nameInput || !emailInput || !messageInput) {
+            console.error(" أحد الحقول مفقود:", {
+                name: !!nameInput,
+                email: !!emailInput,
+                message: !!messageInput
+            });
+            alert('خطأ في الحقول. يرجى تحديث الصفحة.');
+            return;
+        }
+        
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const message = messageInput.value.trim();
+        
+        console.log("📋 البيانات:", { name, email, message });
         
         if (!name || !email || !message) {
-            alert('يرجى ملء جميع الحقول');
+            alert('️ يرجى ملء جميع الحقول المطلوبة');
             return;
         }
         
         const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
+        const originalText = submitBtn ? submitBtn.innerHTML : 'إرسال الرسالة';
         
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'جاري الفتح...';
+        // تعطيل الزر
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الفتح...';
+        }
         
+        // تجهيز رابط mailto
         const receiverEmail = 'alsayed0852.as@gmail.com';
         const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
-        const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
+        const body = encodeURIComponent(`الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`);
+        const mailtoLink = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
         
-        window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
+        console.log(" رابط mailto:", mailtoLink);
         
-        submitBtn.innerHTML = '✓ تم الفتح';
-        submitBtn.style.backgroundColor = '#28a745';
+        // فتح برنامج الإيميل
+        try {
+            window.location.href = mailtoLink;
+            console.log("✅ تم فتح mailto بنجاح");
+        } catch (error) {
+            console.error(" فشل فتح mailto:", error);
+            alert('حدث خطأ. يرجى إرسال الإيميل يدوياً إلى: ' + receiverEmail);
+        }
         
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.style.backgroundColor = '';
-            submitBtn.disabled = false;
-            form.reset();
-        }, 3000);
+        // تحديث الزر
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم الفتح ✓';
+            submitBtn.style.backgroundColor = '#28a745';
+            submitBtn.style.color = '#fff';
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.backgroundColor = '';
+                submitBtn.style.color = '';
+                submitBtn.disabled = false;
+                form.reset();
+                console.log(" تم إعادة تعيين النموذج");
+            }, 3000);
+        }
     });
 }
 
