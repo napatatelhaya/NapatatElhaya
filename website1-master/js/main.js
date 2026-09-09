@@ -216,53 +216,53 @@ function initScrollReveal() {
 // ==========================================
 // 8. تبديل اللغة الذكي - يعمل في كل الصفحات
 // ==========================================
+// ==========================================
+// 8. تبديل اللغة الذكي - يعمل مع أو بدون .html
+// ==========================================
 function initLanguageSwitcher() {
     const langSwitcher = document.getElementById('langSwitcher');
     if (!langSwitcher) {
-        console.log("⚠️ لا يوجد زر تبديل لغة في هذه الصفحة");
+        console.log("️ لا يوجد زر تبديل لغة في هذه الصفحة");
         return;
     }
     
-    const currentUrl = window.location.href;
     const currentPath = window.location.pathname;
-    const currentSearch = window.location.search; // يحفظ ?id=... أو ?category=...
+    const currentSearch = window.location.search;
+    const baseUrl = window.location.origin;
     
-    // خريطة التحويل بين العربية والإنجليزية
-    const pageMap = {
-        'index.html': 'en.html',
-        'en.html': 'index.html',
-        'products.html': 'products-en.html',
-        'products-en.html': 'products.html',
-        'about.html': 'about-en.html',
-        'about-en.html': 'about.html',
-        'contact.html': 'contact-en.html',
-        'contact-en.html': 'contact.html',
-        'product-detail.html': 'product-detail-en.html',
-        'product-detail-en.html': 'product-detail.html'
-    };
+    console.log(" المسار الحالي:", currentPath);
     
-    let newPath = currentPath;
-    let found = false;
+    // خريطة التحويل - تدعم مع وبدون .html
+    const pageMap = [
+        { from: 'index', to: 'en' },
+        { from: 'en', to: 'index' },
+        { from: 'products', to: 'products-en' },
+        { from: 'products-en', to: 'products' },
+        { from: 'about', to: 'about-en' },
+        { from: 'about-en', to: 'about' },
+        { from: 'contact', to: 'contact-en' },
+        { from: 'contact-en', to: 'contact' },
+        { from: 'product-detail', to: 'product-detail-en' },
+        { from: 'product-detail-en', to: 'product-detail' }
+    ];
     
-    // البحث عن الصفحة الحالية في الخريطة
-    for (const [arPage, enPage] of Object.entries(pageMap)) {
-        if (currentPath.includes(arPage)) {
-            newPath = currentPath.replace(arPage, enPage);
-            found = true;
-            console.log(`🔄 التبديل من ${arPage} إلى ${enPage}`);
+    let newPath = null;
+    
+    for (const { from, to } of pageMap) {
+        // البحث عن اسم الصفحة (مع أو بدون .html)
+        if (currentPath.includes(from)) {
+            newPath = currentPath.replace(from, to);
+            console.log(`🔄 التبديل من ${from} إلى ${to}`);
             break;
         }
     }
     
-    if (!found) {
-        console.warn("⚠️ الصفحة الحالية غير موجودة في خريطة التبديل");
+    if (!newPath) {
+        console.warn("⚠️ لم يتم العثور على تطابق في خريطة التبديل");
         return;
     }
     
-    // بناء الرابط الجديد مع الحفاظ على المعاملات (?id=... أو ?category=...)
-    const baseUrl = window.location.origin;
     const newUrl = baseUrl + newPath + currentSearch;
-    
     langSwitcher.href = newUrl;
     console.log("✅ رابط تبديل اللغة:", newUrl);
 }
