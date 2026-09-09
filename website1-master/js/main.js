@@ -143,69 +143,107 @@ function initSmoothScroll() {
 // ==========================================
 // 6. نموذج الاتصال (Contact Form) - فتح الإيميل فقط (بدون Firebase)
 // ==========================================
+// ==========================================
+// 6. نموذج الاتصال - ذكي للهاتف والكمبيوتر
+// ==========================================
 function initContactForm() {
     const form = document.getElementById('contactForm');
-    if (!form) return; // الخروج بهدوء إذا لم يكن النموذج موجوداً في الصفحة
-
+    if (!form) return;
+    
     form.addEventListener('submit', function(e) {
-        e.preventDefault(); // منع إعادة تحميل الصفحة الافتراضي
+        e.preventDefault();
         
-        // جلب البيانات مباشرة من المعرفات الموجودة في كود HTML الخاص بك
         const name = document.getElementById('clientName').value.trim();
         const email = document.getElementById('clientEmail').value.trim();
         const message = document.getElementById('clientMessage').value.trim();
         
         if (!name || !email || !message) {
-            alert('يرجى ملء جميع الحقول المطلوبة');
+            alert('يرجى ملء جميع الحقول');
             return;
         }
         
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         
-        // 1. تغيير حالة الزر ليعرف المستخدم أن هناك تفاعلاً
+        // التحقق إذا كان المستخدم على هاتف
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الفتح...';
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري المعالجة...';
         
-        // 2. تجهيز رابط mailto بشكل آمن
-        const receiverEmail = 'alsayed0852.as@gmail.com';
-        const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
-        const body = encodeURIComponent(`الاسم: ${name}\nالبريد الإلكتروني: ${email}\n\nالرسالة:\n${message}`);
-        const mailtoLink = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
+        if (isMobile) {
+            // على الهاتف: عرض خيارات متعددة
+            showMobileEmailOptions(name, email, message, submitBtn, originalText);
+        } else {
+            // على الكمبيوتر: فتح mailto مباشرة
+            openMailto(name, email, message);
+            submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم فتح البريد ✓';
+            submitBtn.style.backgroundColor = '#28a745';
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.backgroundColor = '';
+                submitBtn.disabled = false;
+                form.reset();
+            }, 3000);
+        }
+    });
+}
+
+// دالة مساعدة لفتح mailto
+function openMailto(name, email, message) {
+    const receiverEmail = 'alsayed0852.as@gmail.com';
+    const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
+    const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
+    window.location.href = `mailto:${receiverEmail}?subject=${subject}&body=${body}`;
+}
+
+// دالة للهواتف: عرض خيارات متعددة
+function showMobileEmailOptions(name, email, message, submitBtn, originalText) {
+    const receiverEmail = 'alsayed0852.as@gmail.com';
+    const subject = encodeURIComponent(`طلب تواصل جديد من: ${name}`);
+    const body = encodeURIComponent(`الاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`);
+    
+    // إنشاء نافذة منبثقة بخيارات
+    const options = confirm(
+        `📧 اختر طريقة الإرسال:\n\n` +
+        `✅ موافق: فتح Gmail/Outlook في المتصفح\n` +
+        ` إلغاء: نسخ البيانات يدوياً`
+    );
+    
+    if (options) {
+        // محاولة فتح Gmail أو Outlook
+        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${receiverEmail}&su=${subject}&body=${body}`;
+        window.open(gmailLink, '_blank');
         
-        // 3. فتح برنامج الإيميل الافتراضي للمستخدم
-        window.location.href = mailtoLink;
-        
-        // 4. إظهار رسالة النجاح وإعادة تعيين النموذج بعد 3 ثوانٍ
-        submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم فتح برنامج البريد ✓';
-        submitBtn.style.backgroundColor = '#28a745'; // لون أخضر
+        submitBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> تم الفتح ✓';
+        submitBtn.style.backgroundColor = '#28a745';
         
         setTimeout(() => {
             submitBtn.innerHTML = originalText;
             submitBtn.style.backgroundColor = '';
             submitBtn.disabled = false;
-            form.reset(); // تفريغ الحقول
+            document.getElementById('contactForm').reset();
         }, 3000);
-    });
+    } else {
+        // نسخ البيانات للحافظة
+        const textToCopy = `إلى: ${receiverEmail}\nالموضوع: طلب تواصل جديد من: ${name}\n\nالاسم: ${name}\nالبريد: ${email}\n\nالرسالة:\n${message}`;
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert('✅ تم نسخ الرسالة! الآن يمكنك لصقها في أي تطبيق بريد.');
+            submitBtn.innerHTML = '<i class="bi bi-clipboard-check"></i> تم النسخ ✓';
+            submitBtn.style.backgroundColor = '#17a2b8';
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.backgroundColor = '';
+                submitBtn.disabled = false;
+                document.getElementById('contactForm').reset();
+            }, 4000);
+        }).catch(() => {
+            alert('يرجى نسخ البيانات يدوياً:\n\n' + textToCopy);
+        });
+    }
 }
-
-// ==========================================
-// 7. Scroll Reveal (الأنيميشن)
-// ==========================================
-function initScrollReveal() {
-    document.querySelectorAll('.fade-up, .fade-in').forEach(el => {
-        const observer = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    obs.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
-        observer.observe(el);
-    });
-}
-
 // ==========================================
 // 8. تبديل اللغة في صفحة تفاصيل المنتج
 // ==========================================
