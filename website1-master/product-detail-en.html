@@ -165,18 +165,6 @@
     <!-- ✅ تم الإصلاح: إضافة type="module" -->
     <script type="module" src="js/main.js"></script>
     
-    <!-- سكريبت تبديل اللغة الذكي (يحافظ على ?id=...) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const langSwitcher = document.getElementById('langSwitcher');
-            if (langSwitcher) {
-                const currentUrl = new URL(window.location.href);
-                let newPath = currentUrl.pathname.replace('product-detail-en.html', 'product-detail.html');
-                const newUrl = new URL(newPath, currentUrl.origin);
-                newUrl.search = currentUrl.search;
-                langSwitcher.href = newUrl.toString();
-            }
-        });
-    </script>
+  
 </body>
 </html>
