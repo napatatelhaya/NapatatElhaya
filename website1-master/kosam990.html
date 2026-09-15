@@ -610,6 +610,15 @@
         } catch (e) { container.innerHTML = '<div class="alert alert-danger">خطأ في التحميل</div>'; }
     }
 
-    window.deleteInquiry = async function(id) {
+ window.deleteInquiry = async function(id) {
         if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
-        try { await deleteDoc(doc(db, 'inquiries',
+        try { 
+            await deleteDoc(doc(db, 'inquiries', id)); 
+            loadInquiries(); 
+        } catch (e) { 
+            alert('خطأ في الحذف'); 
+        }
+    };
+</script>
+</body>
+</html>
