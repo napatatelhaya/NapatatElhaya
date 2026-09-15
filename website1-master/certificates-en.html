@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates | Nabatat Elhaya</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .certificates-hero {
+            background: linear-gradient(135deg, rgba(13, 59, 46, 0.9), rgba(13, 59, 46, 0.8)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=60');
+            background-size: cover;
+            background-position: center;
+            padding: 150px 20px 80px;
+            text-align: center;
+            color: white;
+        }
+        .certificates-hero h1 { font-size: 42px; margin-bottom: 15px; color: var(--copper-light); font-family: 'Playfair Display', serif; }
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            padding: 60px 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .certificate-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(13, 59, 46, 0.08);
+            transition: all 0.4s ease;
+        }
+        .certificate-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(13, 59, 46, 0.15);
+        }
+        .certificate-image {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            background: var(--cream);
+            padding: 20px;
+        }
+        .certificate-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .certificate-date {
+            color: var(--copper);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .certificates-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="mainHeader">
+    <div class="nav-container">
+        <a href="en.html" class="logo">
+            <div class="logo-icon"><i class="bi bi-tree-fill"></i></div>
+            <div class="logo-text">Nabatat <span>Elhaya</span></div>
+        </a>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <nav id="mainNav">
+            <ul id="navMenu">
+                <li><a href="en.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="products-en.html" class="dropdown-toggle">Products <i class="bi bi-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="products-en.html?category=herbs">Herbs</a></li>
+                        <li><a href="products-en.html?category=spices">Spices</a></li>
+                        <li><a href="products-en.html?category=seeds">Seeds</a></li>
+                    </ul>
+                </li>
+                <li><a href="certificates-en.html" class="active">Certificates</a></li>
+                <li><a href="about-en.html">About Us</a></li>
+                <li><a href="contact-en.html">Contact</a></li>
+                <li><a href="certificates.html" class="lang-btn"><i class="bi bi-globe"></i> AR</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<section class="certificates-hero">
+    <h1>Our Certifications</h1>
+    <p>We are proud to hold international quality and accreditation certificates</p>
+</section>
+
+<div class="certificates-grid" id="certificatesContainer">
+    <div class="alert alert-info" style="text-align: center; grid-column: 1 / -1;">Loading certificates...</div>
+</div>
+
+<footer>
+    <div class="container">
+        <p>© 2026 Nabatat Elhaya. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
+        authDomain: "napataelhaya.firebaseapp.com",
+        projectId: "napataelhaya",
+        storageBucket: "napataelhaya.firebasestorage.app",
+        messagingSenderId: "4297790604",
+        appId: "1:4297790604:web:df023add20dfc543e5d7a9",
+        measurementId: "G-8X853PE60X"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadCertificates() {
+        const container = document.getElementById('certificatesContainer');
+        try {
+            const q = query(collection(db, 'certificates'), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            
+            if (snap.empty) {
+                container.innerHTML = '<div class="alert alert-info" style="text-align: center; grid-column: 1 / -1;">No certificates available currently.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            snap.forEach(docSnap => {
+                const cert = docSnap.data();
+                const date = cert.createdAt ? new Date(cert.createdAt.toDate()).toLocaleDateString('en-US') : '';
+                
+                const div = document.createElement('div');
+                div.className = 'certificate-card fade-up';
+                div.innerHTML = `
+                    <img src="${cert.image}" alt="Certificate" class="certificate-image">
+                    <div class="certificate-info">
+                        ${cert.titleEn ? `<h3>${cert.titleEn}</h3>` : ''}
+                        ${date ? `<div class="certificate-date">📅 ${date}</div>` : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            document.querySelectorAll('.fade-up').forEach(el => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                observer.observe(el);
+            });
+        } catch (e) {
+            console.error(e);
+            container.innerHTML = '<div class="alert alert-danger" style="text-align: center; grid-column: 1 / -1;">Error loading certificates.</div>';
+        }
+    }
+
+    loadCertificates();
+</script>
+
+<script src="js/main.js"></script>
+</body>
+</html>
