@@ -86,7 +86,6 @@
                 <li><a href="certificates.html" class="active">الشهادات</a></li>
                 <li><a href="about.html">من نحن</a></li>
                 <li><a href="contact.html">اتصل بنا</a></li>
-                 <li><a href="certificates.html">الشهادات</a></li>
                 <li><a href="certificates-en.html" class="lang-btn"><i class="bi bi-globe"></i> EN</a></li>
             </ul>
         </nav>
@@ -107,6 +106,10 @@
         <p>© 2026 نباتات الحياة. جميع الحقوق محفوظة.</p>
     </div>
 </footer>
+
+<a href="https://wa.me/201067131398" class="whatsapp-float" target="_blank" rel="noopener noreferrer">
+    <i class="bi bi-whatsapp"></i>
+</a>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -146,14 +149,13 @@
                 div.innerHTML = `
                     <img src="${cert.image}" alt="شهادة" class="certificate-image">
                     <div class="certificate-info">
-                        ${cert.title ? `<h3>${cert.title}</h3>` : ''}
+                        ${cert.titleAr ? `<h3>${cert.titleAr}</h3>` : ''}
                         ${date ? `<div class="certificate-date">📅 ${date}</div>` : ''}
                     </div>
                 `;
                 container.appendChild(div);
             });
             
-            // تفعيل Scroll Reveal
             document.querySelectorAll('.fade-up').forEach(el => {
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
@@ -173,6 +175,7 @@
 
     loadCertificates();
 </script>
-<script type="module" src="js/main.js"></script> 
+
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
