@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        /* إزالة أي قيود على العرض */
+        body {
+            overflow-x: visible !important;
+        }
+        
         .certificates-hero {
             background: linear-gradient(135deg, rgba(13, 59, 46, 0.9), rgba(13, 59, 46, 0.8)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=60');
             background-size: cover;
@@ -23,31 +28,40 @@
             margin-bottom: 15px;
             color: var(--copper-light);
         }
+        
+        .certificates-wrapper {
+            width: 100%;
+            padding: 60px 0;
+        }
+        
         .certificates-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 60px;
-    padding: 60px 20px;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-.certificate-item {
-    width: 100%;
-    padding: 0;
-    margin-bottom: 50px;
-}
-.certificate-image {
-    width: 100%;
-    height: auto;
-    display: block;
-}
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .certificate-item {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            background: transparent;
+        }
+        
+        .certificate-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        
         @media (max-width: 768px) {
             .certificates-grid {
-                padding: 40px 15px;
-                gap: 30px;
-            }
-            .certificate-item {
-                padding: 15px;
+                padding: 0 10px;
+                gap: 50px;
             }
         }
     </style>
@@ -88,8 +102,10 @@
     <p>نفخر بحصولنا على شهادات الجودة والاعتماد الدولية</p>
 </section>
 
-<div class="certificates-grid" id="certificatesContainer">
-    <div style="text-align: center; color: white; padding: 20px;">جاري تحميل الشهادات...</div>
+<div class="certificates-wrapper">
+    <div class="certificates-grid" id="certificatesContainer">
+        <div style="text-align: center; color: #333; padding: 20px;">جاري تحميل الشهادات...</div>
+    </div>
 </div>
 
 <footer>
@@ -126,7 +142,7 @@
             const snap = await getDocs(q);
             
             if (snap.empty) {
-                container.innerHTML = '<div style="text-align: center; color: white; padding: 20px;">لا توجد شهادات حالياً.</div>';
+                container.innerHTML = '<div style="text-align: center; color: #333; padding: 20px;">لا توجد شهادات حالياً.</div>';
                 return;
             }
             
@@ -141,7 +157,7 @@
             });
         } catch (e) {
             console.error("خطأ في تحميل الشهادات:", e);
-            container.innerHTML = '<div style="text-align: center; color: white; padding: 20px;">حدث خطأ في تحميل الشهادات.</div>';
+            container.innerHTML = '<div style="text-align: center; color: #333; padding: 20px;">حدث خطأ في تحميل الشهادات.</div>';
         }
     }
 
