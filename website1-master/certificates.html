@@ -10,9 +10,20 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* إزالة أي قيود على العرض */
+        /* إلغاء جميع القيود */
+        * {
+            box-sizing: border-box !important;
+        }
+        
         body {
             overflow-x: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .container {
+            max-width: 100% !important;
+            padding: 0 !important;
         }
         
         .certificates-hero {
@@ -29,39 +40,38 @@
             color: var(--copper-light);
         }
         
-        .certificates-wrapper {
-            width: 100%;
-            padding: 60px 0;
-        }
-        
-        .certificates-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 80px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        #certificatesContainer {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 60px 20px !important;
+            margin: 0 auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 80px !important;
         }
         
         .certificate-item {
-            width: 100%;
-            padding: 0;
-            margin: 0;
-            background: transparent;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            overflow: visible !important;
         }
         
         .certificate-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            max-width: 100%;
-            object-fit: contain;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            display: block !important;
+            object-fit: contain !important;
+            margin: 0 !important;
         }
         
         @media (max-width: 768px) {
-            .certificates-grid {
-                padding: 0 10px;
-                gap: 50px;
+            #certificatesContainer {
+                padding: 40px 10px !important;
+                gap: 50px !important;
             }
         }
     </style>
@@ -102,10 +112,8 @@
     <p>نفخر بحصولنا على شهادات الجودة والاعتماد الدولية</p>
 </section>
 
-<div class="certificates-wrapper">
-    <div class="certificates-grid" id="certificatesContainer">
-        <div style="text-align: center; color: #333; padding: 20px;">جاري تحميل الشهادات...</div>
-    </div>
+<div id="certificatesContainer">
+    <div style="text-align: center; color: #333; padding: 20px;">جاري تحميل الشهادات...</div>
 </div>
 
 <footer>
