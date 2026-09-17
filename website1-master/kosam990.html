@@ -101,19 +101,7 @@
             <div class="menu-item" onclick="switchView('hoursView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-clock"></i></div><div><div class="menu-text">ساعات العمل</div><div class="menu-subtext">أيام وساعات العمل</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
             <div class="menu-item" onclick="switchView('aboutView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-info-circle"></i></div><div><div class="menu-text">من نحن</div><div class="menu-subtext">الرؤية والرسالة</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
             <div class="menu-item" onclick="switchView('inquiriesView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-envelope-paper"></i></div><div><div class="menu-text">الطلبات الواردة <span class="badge" id="inquiriesBadge">0</span></div><div class="menu-subtext">رسائل نموذج الاتصال</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
-            
-            <!-- إضافة قسم الشهادات الجديد في القائمة -->
-            <div class="menu-item" onclick="switchView('certificatesView')">
-                <div class="menu-content">
-                    <div class="menu-icon"><i class="bi bi-award"></i></div>
-                    <div>
-                        <div class="menu-text">إدارة الشهادات</div>
-                        <div class="menu-subtext">رفع وعرض الشهادات</div>
-                    </div>
-                </div>
-                <i class="bi bi-chevron-left arrow-icon"></i>
-            </div>
-            
+            <div class="menu-item" onclick="switchView('certificatesView')"><div class="menu-content"><div class="menu-icon"><i class="bi bi-award"></i></div><div><div class="menu-text">إدارة الشهادات</div><div class="menu-subtext">رفع وعرض الشهادات</div></div></div><i class="bi bi-chevron-left arrow-icon"></i></div>
         </div>
         <div class="quick-actions"><a href="../index.html" target="_blank" class="btn-secondary"><i class="bi bi-eye"></i> معاينة الموقع</a></div>
     </div>
@@ -218,36 +206,20 @@
         <div id="inquiriesListContainer"></div>
     </div>
 
-    <!-- إضافة قسم الشهادات (View Section) -->
     <div id="certificatesView" class="view-section">
         <div class="page-header">
-            <button class="back-btn" onclick="switchView('dashboardView')">
-                <i class="bi bi-arrow-right"></i>
-            </button>
+            <button class="back-btn" onclick="switchView('dashboardView')"><i class="bi bi-arrow-right"></i></button>
             <h1 class="page-title">إدارة الشهادات</h1>
         </div>
-        
         <div class="form-card">
             <div id="certificateAlert"></div>
             <form id="addCertificateForm">
-                <div class="form-group">
-                    <label>عنوان الشهادة (عربي) - اختياري</label>
-                    <input type="text" id="certTitleAr" placeholder="مثال: شهادة ISO 9001">
-                </div>
-                <div class="form-group">
-                    <label>Certificate Title (English) - اختياري</label>
-                    <input type="text" id="certTitleEn" placeholder="Example: ISO 9001 Certificate">
-                </div>
-                <div class="form-group">
-                    <label>صورة الشهادة</label>
-                    <input type="file" id="certImage" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn-primary">
-                    <i class="bi bi-cloud-arrow-up"></i> رفع الشهادة
-                </button>
+                <div class="form-group"><label>عنوان الشهادة (عربي) - اختياري</label><input type="text" id="certTitleAr" placeholder="مثال: شهادة ISO 9001"></div>
+                <div class="form-group"><label>Certificate Title (English) - اختياري</label><input type="text" id="certTitleEn" placeholder="Example: ISO 9001 Certificate"></div>
+                <div class="form-group"><label>صورة الشهادة</label><input type="file" id="certImage" accept="image/*" required></div>
+                <button type="submit" class="btn-primary"><i class="bi bi-cloud-arrow-up"></i> رفع الشهادة</button>
             </form>
         </div>
-        
         <div id="certificatesListContainer"></div>
     </div>
 
@@ -268,17 +240,12 @@
         measurementId: "G-8X853PE60X"
     };
 
-    // ✅ إعدادات Cloudinary
-    const CLOUDINARY_CONFIG = {
-        cloudName: 'mouhkaha',
-        uploadPreset: 'napatat_elhaya_preset'
-    };
+    const CLOUDINARY_CONFIG = { cloudName: 'mouhkaha', uploadPreset: 'napatat_elhaya_preset' };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // مراقبة حالة تسجيل الدخول
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -295,24 +262,17 @@
         const email = document.getElementById('adminEmail').value;
         const password = document.getElementById('adminPassword').value;
         const btn = this.querySelector('button[type="submit"]');
-        
-        btn.disabled = true;
-        btn.innerHTML = 'جاري التحقق...';
-
+        btn.disabled = true; btn.innerHTML = 'جاري التحقق...';
         try {
             await signInWithEmailAndPassword(auth, email, password);
         } catch (error) {
             alert('فشل تسجيل الدخول: تأكد من البريد الإلكتروني وكلمة المرور.');
-            console.error(error);
         } finally {
-            btn.disabled = false;
-            btn.innerHTML = 'تسجيل الدخول';
+            btn.disabled = false; btn.innerHTML = 'تسجيل الدخول';
         }
     });
 
-    window.logout = async function() {
-        await signOut(auth);
-    };
+    window.logout = async function() { await signOut(auth); };
 
     window.switchView = function(viewId) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -325,7 +285,7 @@
         if (viewId === 'hoursView') loadHoursData();
         if (viewId === 'aboutView') loadAboutData();
         if (viewId === 'inquiriesView') loadInquiries();
-        if (viewId === 'certificatesView') loadCertificatesList(); // تمت إضافة هذه السطر
+        if (viewId === 'certificatesView') loadCertificatesList();
         if (viewId === 'addProductView' && !document.getElementById('editProductId').value) {
             document.getElementById('addProductForm').reset();
             document.getElementById('productFormTitle').textContent = 'إضافة منتج';
@@ -333,7 +293,7 @@
     };
 
     // ==========================================
-    // دالة معالجة وضغط الصور (Canvas 800x800)
+    // ✅ دالة معالجة الصور (معدلة للحفاظ على الأبعاد ومنع القص)
     // ==========================================
     function processImage(file) {
         return new Promise((resolve, reject) => {
@@ -346,24 +306,31 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    const TARGET_SIZE = 800;
-                    canvas.width = TARGET_SIZE;
-                    canvas.height = TARGET_SIZE;
+                    
+                    // الحد الأقصى للأبعاد مع الحفاظ على النسبة الأصلية (Aspect Ratio)
+                    const MAX_DIMENSION = 1200; 
+                    let width = img.width;
+                    let height = img.height;
 
-                    let srcX = 0, srcY = 0, srcWidth = img.width, srcHeight = img.height;
-                    if (img.width > img.height) {
-                        srcWidth = img.height;
-                        srcX = (img.width - img.height) / 2;
+                    if (width > height) {
+                        if (width > MAX_DIMENSION) {
+                            height = Math.round(height * (MAX_DIMENSION / width));
+                            width = MAX_DIMENSION;
+                        }
                     } else {
-                        srcHeight = img.width;
-                        srcY = (img.height - img.width) / 2;
+                        if (height > MAX_DIMENSION) {
+                            width = Math.round(width * (MAX_DIMENSION / height));
+                            height = MAX_DIMENSION;
+                        }
                     }
 
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, 0, 0, TARGET_SIZE, TARGET_SIZE);
+                    canvas.width = width;
+                    canvas.height = height;
 
-                    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.85);
+                    // رسم الصورة بالحجم الجديد دون أي قص (Crop)
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.9);
                 };
                 img.onerror = () => reject('حدث خطأ أثناء تحميل الصورة في المتصفح.');
                 img.src = event.target.result;
@@ -373,21 +340,14 @@
         });
     }
 
-    // ==========================================
-    // دالة رفع الصور إلى Cloudinary
-    // ==========================================
     async function uploadImage(file) {
         try {
-            // 1. معالجة وضغط الصورة أولاً
             const processedBlob = await processImage(file);
-            
-            // 2. تجهيز البيانات للإرسال إلى Cloudinary
             const formData = new FormData();
             formData.append('file', processedBlob, 'processed_image.jpg');
             formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
             formData.append('tags', 'napatat_elhaya');
             
-            // 3. الرفع الفعلي
             const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
             const res = await fetch(uploadUrl, { method: 'POST', body: formData });
             
@@ -397,7 +357,6 @@
             }
             
             const result = await res.json();
-            console.log("✅ تم رفع الصورة إلى Cloudinary:", result.secure_url);
             return result.secure_url;
         } catch (error) {
             console.error("❌ خطأ في عملية رفع الصورة:", error);
@@ -436,6 +395,7 @@
     window.editProduct = async function(id) {
         try {
             const snap = await getDoc(doc(db, 'products', id));
+            if (!snap.exists()) { alert('المنتج غير موجود'); return; }
             const p = snap.data();
             document.getElementById('editProductId').value = id;
             document.getElementById('prodNameAr').value = p.name.ar;
@@ -660,32 +620,16 @@
 
     window.deleteInquiry = async function(id) {
         if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
-        try { 
-            await deleteDoc(doc(db, 'inquiries', id)); 
-            loadInquiries(); 
-        } catch (e) { 
-            alert('خطأ في الحذف'); 
-        }
+        try { await deleteDoc(doc(db, 'inquiries', id)); loadInquiries(); } catch (e) { alert('خطأ في الحذف'); }
     };
 
-    // ==========================================
-    // دوال الشهادات الجديدة
-    // ==========================================
-    
-    // دالة عرض قائمة الشهادات
     async function loadCertificatesList() {
         const container = document.getElementById('certificatesListContainer');
         container.innerHTML = '<div class="alert alert-info">جاري التحميل...</div>';
-        
         try {
             const q = query(collection(db, 'certificates'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
-            
-            if (snap.empty) {
-                container.innerHTML = '<div class="alert alert-info">لا توجد شهادات بعد.</div>';
-                return;
-            }
-            
+            if (snap.empty) { container.innerHTML = '<div class="alert alert-info">لا توجد شهادات بعد.</div>'; return; }
             container.innerHTML = '';
             snap.forEach(docSnap => {
                 const cert = docSnap.data();
@@ -698,79 +642,38 @@
                         <div class="product-item-cat">${cert.titleEn || ''}</div>
                     </div>
                     <div class="product-item-actions">
-                        <button class="btn-danger" onclick="deleteCertificate('${docSnap.id}')">
-                            <i class="bi bi-trash"></i> حذف
-                        </button>
+                        <button class="btn-danger" onclick="deleteCertificate('${docSnap.id}')"><i class="bi bi-trash"></i> حذف</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
-        } catch (e) {
-            container.innerHTML = '<div class="alert alert-danger">خطأ في التحميل</div>';
-        }
+        } catch (e) { container.innerHTML = '<div class="alert alert-danger">خطأ في التحميل</div>'; }
     }
 
-    // دالة إضافة شهادة
     document.getElementById('addCertificateForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = e.target.querySelector('button[type="submit"]');
         const imageFile = document.getElementById('certImage').files[0];
-        
-        if (!imageFile) {
-            document.getElementById('certificateAlert').innerHTML = 
-                '<div class="alert alert-danger">الرجاء اختيار صورة</div>';
-            return;
-        }
-        
-        btn.disabled = true;
-        btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الرفع...';
-        
+        if (!imageFile) { document.getElementById('certificateAlert').innerHTML = '<div class="alert alert-danger">الرجاء اختيار صورة</div>'; return; }
+        btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> جاري الرفع...';
         try {
             const imageUrl = await uploadImage(imageFile);
-            
-            const data = {
-                image: imageUrl,
-                titleAr: document.getElementById('certTitleAr').value,
-                titleEn: document.getElementById('certTitleEn').value,
-                createdAt: serverTimestamp()
-            };
-            
+            const data = { image: imageUrl, titleAr: document.getElementById('certTitleAr').value, titleEn: document.getElementById('certTitleEn').value, createdAt: serverTimestamp() };
             await addDoc(collection(db, 'certificates'), data);
-            
-            document.getElementById('certificateAlert').innerHTML = 
-                '<div class="alert alert-success">✅ تم رفع الشهادة بنجاح!</div>';
-            
+            document.getElementById('certificateAlert').innerHTML = '<div class="alert alert-success">✅ تم رفع الشهادة بنجاح!</div>';
             document.getElementById('certTitleAr').value = '';
             document.getElementById('certTitleEn').value = '';
             document.getElementById('certImage').value = '';
-            
             loadCertificatesList();
-            
-            setTimeout(() => {
-                document.getElementById('certificateAlert').innerHTML = '';
-            }, 3000);
-            
+            setTimeout(() => { document.getElementById('certificateAlert').innerHTML = ''; }, 3000);
         } catch (err) {
-            document.getElementById('certificateAlert').innerHTML = 
-                `<div class="alert alert-danger">❌ خطأ: ${err.message}</div>`;
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-cloud-arrow-up"></i> رفع الشهادة';
-        }
+            document.getElementById('certificateAlert').innerHTML = `<div class="alert alert-danger">❌ خطأ: ${err.message}</div>`;
+        } finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-cloud-arrow-up"></i> رفع الشهادة'; }
     });
 
-    // دالة حذف شهادة
     window.deleteCertificate = async function(id) {
         if (!confirm('هل أنت متأكد من حذف هذه الشهادة؟')) return;
-        
-        try {
-            await deleteDoc(doc(db, 'certificates', id));
-            alert('تم الحذف بنجاح');
-            loadCertificatesList();
-        } catch (e) {
-            alert('خطأ في الحذف');
-            console.error(e);
-        }
+        try { await deleteDoc(doc(db, 'certificates', id)); alert('تم الحذف بنجاح'); loadCertificatesList(); } catch (e) { alert('خطأ في الحذف'); }
     };
 </script>
 </body>
