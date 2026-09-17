@@ -8,11 +8,71 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
+        /* ===== إصلاح الهيدر - أولوية قصوى ===== */
+        header#mainHeader {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            background: rgba(13, 59, 46, 0.98) !important;
+            padding: 18px 0 !important;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1) !important;
+        }
+
+        header#mainHeader .nav-container {
+            max-width: 1300px !important;
+            margin: 0 auto !important;
+            padding: 0 30px !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+
+        header#mainHeader nav ul {
+            display: flex !important;
+            list-style: none !important;
+            gap: 35px !important;
+            align-items: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        header#mainHeader nav a {
+            color: white !important;
+            text-decoration: none !important;
+            font-weight: 500 !important;
+            font-size: 15px !important;
+        }
+
+        header#mainHeader .logo-icon {
+            width: 45px !important;
+            height: 45px !important;
+            background: linear-gradient(135deg, #b87333, #c9a227) !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 24px !important;
+            color: white !important;
+        }
+
+        header#mainHeader .logo-text {
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            color: white !important;
+        }
+
+        header#mainHeader .logo-text span {
+            color: #d4956a !important;
+        }
+
         .certificates-hero {
             background: linear-gradient(135deg, rgba(13, 59, 46, 0.9), rgba(13, 59, 46, 0.8)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=60');
             background-size: cover;
             background-position: center;
-            padding: 150px 20px 80px;
+            padding: 200px 20px 80px !important;
             text-align: center;
             color: white;
         }
