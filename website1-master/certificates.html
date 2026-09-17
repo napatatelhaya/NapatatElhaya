@@ -137,7 +137,7 @@
             const snap = await getDocs(q);
             
             if (snap.empty) {
-                container.innerHTML = '<div class="alert alert-info" style="text-align: center; grid-column: 1 / -1;">لا توجد شهادات حالياً.</div>';
+                container.innerHTML = '<div style="text-align: center; grid-column: 1 / -1; color: white; padding: 20px;">لا توجد شهادات حالياً.</div>';
                 return;
             }
             
@@ -159,7 +159,7 @@
             });
         } catch (e) {
             console.error("خطأ في تحميل الشهادات:", e);
-            container.innerHTML = '<div class="alert alert-danger" style="text-align: center; grid-column: 1 / -1;">حدث خطأ في تحميل الشهادات.</div>';
+            container.innerHTML = '<div style="text-align: center; grid-column: 1 / -1; color: white; padding: 20px;">حدث خطأ في تحميل الشهادات.</div>';
         }
     }
 
