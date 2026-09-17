@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/layout.css">
-     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <style>
         .certificates-hero {
             background: linear-gradient(135deg, rgba(13, 59, 46, 0.9), rgba(13, 59, 46, 0.8)), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=60');
@@ -53,6 +53,11 @@
             padding: 20px;
             text-align: center;
         }
+        .certificate-date {
+            color: var(--copper);
+            font-size: 14px;
+            font-weight: 600;
+        }
         @media (max-width: 768px) {
             .certificates-grid { grid-template-columns: 1fr; }
         }
@@ -60,7 +65,6 @@
 </head>
 <body>
 
-<!-- انسخ الهيدر من products.html أو index.html -->
 <header id="mainHeader">
     <div class="nav-container">
         <a href="index.html" class="logo">
@@ -143,7 +147,7 @@
                 const date = cert.createdAt ? new Date(cert.createdAt.toDate()).toLocaleDateString('ar-EG') : '';
                 
                 const div = document.createElement('div');
-                div.className = 'certificate-card fade-up';
+                div.className = 'certificate-card';
                 div.innerHTML = `
                     <img src="${cert.image}" alt="شهادة" class="certificate-image">
                     <div class="certificate-info">
@@ -154,12 +158,13 @@
                 container.appendChild(div);
             });
         } catch (e) {
-            console.error(e);
+            console.error("خطأ في تحميل الشهادات:", e);
             container.innerHTML = '<div class="alert alert-danger" style="text-align: center; grid-column: 1 / -1;">حدث خطأ في تحميل الشهادات.</div>';
         }
     }
 
-    loadCertificates();
+    // استدعاء الدالة فور تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', loadCertificates);
 </script>
 
 <script type="module" src="js/main.js"></script>
