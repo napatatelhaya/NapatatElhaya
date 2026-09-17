@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -34,6 +35,7 @@
             text-align: center;
             color: white;
         }
+
         .certificates-hero h1 {
             font-size: 42px;
             margin-bottom: 15px;
@@ -65,13 +67,22 @@
             height: auto !important;
             display: block !important;
             object-fit: contain !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
         }
         
         @media (max-width: 768px) {
             #certificatesContainer {
                 padding: 40px 10px !important;
                 gap: 50px !important;
+            }
+
+            .certificate-image {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                object-fit: contain !important;
+                display: block !important;
+                margin: 0 auto !important;
             }
         }
     </style>
@@ -84,24 +95,44 @@
             <div class="logo-icon"><i class="bi bi-tree-fill"></i></div>
             <div class="logo-text">نباتات <span>الحياة</span></div>
         </a>
+
         <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
             <span></span><span></span><span></span>
         </button>
+
         <nav id="mainNav">
             <ul id="navMenu">
                 <li><a href="index.html">الرئيسية</a></li>
+
                 <li class="dropdown">
-                    <a href="products.html" class="dropdown-toggle">منتجاتنا <i class="bi bi-chevron-down"></i></a>
+                    <a href="products.html" class="dropdown-toggle">
+                        منتجاتنا <i class="bi bi-chevron-down"></i>
+                    </a>
+
                     <ul class="dropdown-menu">
                         <li><a href="products.html?category=herbs">أعشاب</a></li>
                         <li><a href="products.html?category=spices">توابل</a></li>
                         <li><a href="products.html?category=seeds">بذور</a></li>
                     </ul>
                 </li>
-                <li><a href="certificates.html" class="active">الشهادات</a></li>
-                <li><a href="about.html">من نحن</a></li>
-                <li><a href="contact.html">اتصل بنا</a></li>
-                <li><a href="certificates-en.html" class="lang-btn"><i class="bi bi-globe"></i> EN</a></li>
+
+                <li>
+                    <a href="certificates.html" class="active">الشهادات</a>
+                </li>
+
+                <li>
+                    <a href="about.html">من نحن</a>
+                </li>
+
+                <li>
+                    <a href="contact.html">اتصل بنا</a>
+                </li>
+
+                <li>
+                    <a href="certificates-en.html" class="lang-btn">
+                        <i class="bi bi-globe"></i> EN
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
@@ -113,7 +144,9 @@
 </section>
 
 <div id="certificatesContainer">
-    <div style="text-align: center; color: #333; padding: 20px;">جاري تحميل الشهادات...</div>
+    <div style="text-align: center; color: #333; padding: 20px;">
+        جاري تحميل الشهادات...
+    </div>
 </div>
 
 <footer>
@@ -145,8 +178,13 @@
 
     async function loadCertificates() {
         const container = document.getElementById('certificatesContainer');
+
         try {
-            const q = query(collection(db, 'certificates'), orderBy('createdAt', 'desc'));
+            const q = query(
+                collection(db, 'certificates'),
+                orderBy('createdAt', 'desc')
+            );
+
             const snap = await getDocs(q);
             
             if (snap.empty) {
@@ -155,16 +193,27 @@
             }
             
             container.innerHTML = '';
+
             snap.forEach(docSnap => {
                 const cert = docSnap.data();
                 
                 const div = document.createElement('div');
                 div.className = 'certificate-item';
-                div.innerHTML = `<img src="${cert.image}" alt="شهادة" class="certificate-image">`;
+
+                div.innerHTML = `
+                    <img 
+                        src="${cert.image}" 
+                        alt="شهادة" 
+                        class="certificate-image"
+                    >
+                `;
+
                 container.appendChild(div);
             });
+
         } catch (e) {
             console.error("خطأ في تحميل الشهادات:", e);
+
             container.innerHTML = '<div style="text-align: center; color: #333; padding: 20px;">حدث خطأ في تحميل الشهادات.</div>';
         }
     }
@@ -173,5 +222,6 @@
 </script>
 
 <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
