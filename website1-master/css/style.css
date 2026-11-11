@@ -1137,19 +1137,22 @@ html[dir="ltr"] .dropdown-menu li a {
 /* ==========================================
    ✅ أيقونات التواصل الاجتماعي العائمة (من لوحة التحكم)
    ========================================== */
+/* الموضع الافتراضي: يسار (يطابق زر واتساب العائم الموضوع يسارًا في كل المواقع) */
 .social-float-stack {
     position: fixed;
     bottom: 100px; /* فوق زر الواتساب مباشرة */
     left: 30px;
+    right: auto;
     display: flex;
     flex-direction: column;
     gap: 12px;
     z-index: 1000;
 }
 
-html[dir="rtl"] .social-float-stack,
-body[dir="rtl"] .social-float-stack {
-    left: 30px;
+/* إذا كان زر الواتساب في أي صفحة على اليمين، تنطبق القاعدة التالية تلقائيًا عبر JS (right-aligned class) */
+.social-float-stack.stack-right {
+    left: auto;
+    right: 30px;
 }
 
 .social-float-stack .social-link {
@@ -1172,9 +1175,14 @@ body[dir="rtl"] .social-float-stack {
     color: #fff;
 }
 
-.social-float-stack .social-link[href*="facebook.com"]:hover { background-color: #1877f2; }
-.social-float-stack .social-link[href*="instagram.com"]:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-.social-float-stack .social-link[href*="linkedin.com"]:hover { background-color: #0a66c2; }
+.social-float-stack .social-link.social-facebook:hover,
+.footer-social .social-link.social-facebook:hover { background-color: #1877f2; color: #fff; }
+.social-float-stack .social-link.social-instagram:hover,
+.footer-social .social-link.social-instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+.social-float-stack .social-link.social-linkedin:hover,
+.footer-social .social-link.social-linkedin:hover { background-color: #0a66c2; color: #fff; }
+.social-float-stack .social-link svg,
+.footer-social .social-link svg { display: block; width: 20px; height: 20px; }
 
 .footer-social {
     display: flex;
