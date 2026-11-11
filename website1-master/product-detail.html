@@ -134,7 +134,9 @@
                     document.getElementById('productCategory').textContent = categories[product.category] || product.category;
                     
                     const whatsappMsg = `أريد الاستفسار عن منتج: ${product.name.ar}`;
-                    document.getElementById('whatsappLink').href = `https://wa.me/201096413175?text=${encodeURIComponent(whatsappMsg)}`;
+                    // ✅ استخدام رقم واتساب الرئيسي من لوحة التحكم (يضعه main.js في dataset) مع بديل افتراضي
+                    const waNum = document.getElementById('whatsappLink').dataset.waNumber || '201096413175';
+                    document.getElementById('whatsappLink').href = `https://wa.me/${waNum}?text=${encodeURIComponent(whatsappMsg)}`;
                     
                     document.title = `${product.name.ar} | نباتات الحياة`;
                 } else {

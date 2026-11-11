@@ -18,23 +18,34 @@ const db = getFirestore(app);
 // 1. تحميل الإعدادات (سريع مع التخزين المؤقت)
 // ==========================================
 async function loadSiteSettings() {
+    // ✅ التخزين المؤقت أصبح "عرض فوري" فقط — يتم دائمًا جلب أحدث بيانات من Firestore
+    // بحيث أي تغيير من لوحة التحكم يظهر فورًا عند إعادة تحميل الصفحة.
     const cachedSettings = sessionStorage.getItem('siteSettings');
     if (cachedSettings) {
         applySettingsToDOM(JSON.parse(cachedSettings));
-        return;
     }
     try {
-        const fetchPromise = getDoc(doc(db, 'settings', 'general'));
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000));
-        const snap = await Promise.race([fetchPromise, timeoutPromise]);
+        const snap = await getDoc(doc(db, 'settings', 'general'));
         if (snap.exists()) {
             const data = snap.data();
             sessionStorage.setItem('siteSettings', JSON.stringify(data));
             applySettingsToDOM(data);
         }
     } catch (error) {
-        console.warn("⚠️ تم استخدام الإعدادات الافتراضية بسبب بطء الشبكة:", error);
+        if (!cachedSettings) {
+            console.warn("⚠️ تعذر تحميل الإعدادات:", error);
+        }
     }
+}
+
+// ✅ تنسيق رقم الهاتف للعرض مثل: +20 106 713 1398
+function formatPhoneDisplay(phone) {
+    const p = String(phone || '').replace(/\D/g, '');
+    if (!p) return '';
+    if (p.length === 12 && p.startsWith('20')) {
+        return `+${p.slice(0, 2)} ${p.slice(2, 5)} ${p.slice(5, 8)} ${p.slice(8)}`;
+    }
+    return `+${p}`;
 }
 
 function applySettingsToDOM(data) {
@@ -51,6 +62,101 @@ function applySettingsToDOM(data) {
             el.innerHTML = `${parts[0]} <span>${parts.slice(1).join(' ')}</span>`;
         });
     }
+
+    // ==========================================
+    // ✅ 1. أرقام الهاتف / واتساب القادمة من لوحة التحكم
+    // ==========================================
+    const waMain = String(data.whatsappMain || '').replace(/\D/g, '');
+    const waSecondary = String(data.whatsappSecondary || '').replace(/\D/g, '');
+
+    // زر الواتساب العائم في كل الصفحات
+    document.querySelectorAll('.whatsapp-float').forEach(a => {
+        a.href = `https://wa.me/${waMain || '201096413175'}`;
+    });
+
+    // روابط tel: داخل بطاقات الاتصال (الرئيسية / من نحن)
+    const telLinks = document.querySelectorAll('.phone-numbers a[href^="tel:"]');
+    telLinks.forEach((a, i) => {
+        const num = (i === 0 ? waMain : waSecondary) || a.getAttribute('href').replace(/\D/g, '');
+        a.href = `tel:+${num}`;
+        a.textContent = formatPhoneDisplay(num);
+    });
+
+    // روابط wa.me داخل بطاقة الهاتف في صفحة اتصل بنا
+    const waCardLinks = document.querySelectorAll('.info-card a[href^="https://wa.me/"]');
+    waCardLinks.forEach((a, i) => {
+        const num = (i === 0 ? waMain : waSecondary) || a.getAttribute('href').replace(/\D/g, '');
+        a.href = `https://wa.me/${num}`;
+        a.textContent = formatPhoneDisplay(num);
+    });
+
+    // رابط واتساب في صفحة تفاصيل المنتج
+    const productWa = document.getElementById('whatsappLink');
+    if (productWa && waMain) {
+        productWa.dataset.waNumber = waMain; // يستخدمه كود الصفحة لبناء رابط الاستفسار
+    }
+
+    // ==========================================
+    // ✅ 2. البريد الإلكتروني القادم من لوحة التحكم
+    // ==========================================
+    const email = (data.email || '').trim();
+    if (email) {
+        document.querySelectorAll('a[href^="mailto:"]').forEach(a => {
+            a.href = `mailto:${email}`;
+            // تحديث النص المعروض فقط إذا كان بريدًا وليس نصًا آخر (مثل رابط "رد")
+            if (a.textContent.includes('@')) a.textContent = email;
+        });
+    }
+
+    // ==========================================
+    // ✅ 3. روابط التواصل الاجتماعي (فيسبوك / إنستجرام / لينكدإن)
+    // تُضاف تلقائيًا بجانب أيقونة الواتساب العائمة، وفي الفوتر أيضًا.
+    // ==========================================
+    const social = data.social || {};
+    const socialDefs = [
+        { key: 'facebook', icon: 'bi-facebook', label: 'Facebook' },
+        { key: 'instagram', icon: 'bi-instagram', label: 'Instagram' },
+        { key: 'linkedin', icon: 'bi-linkedin', label: 'LinkedIn' }
+    ];
+
+    function buildSocialHtml() {
+        return socialDefs
+            .filter(s => (social[s.key] || '').trim())
+            .map(s => `<a href="${social[s.key].trim()}" target="_blank" rel="noopener noreferrer" class="social-link" title="${s.label}" aria-label="${s.label}"><i class="bi ${s.icon}"></i></a>`)
+            .join('');
+    }
+
+    const socialHtml = buildSocialHtml();
+
+    // أ) إضافة الأيقونات مع زر الواتساب العائم (شريط عمودي واحد)
+    document.querySelectorAll('.whatsapp-float').forEach(btn => {
+        if (btn.parentElement.querySelector('.social-float-stack')) return;
+        if (!socialHtml) return;
+        btn.classList.add('float-stack-item');
+        const stack = document.createElement('div');
+        stack.className = 'social-float-stack';
+        stack.innerHTML = socialHtml;
+        btn.insertAdjacentElement('afterend', stack);
+    });
+
+    // ب) قسم تواصل اجتماعي في الفوتر (صفحات index / en)
+    document.querySelectorAll('footer .container').forEach(c => {
+        if (c.querySelector('.footer-social') || !socialHtml) return;
+        const div = document.createElement('div');
+        div.className = 'footer-social';
+        div.innerHTML = socialHtml;
+        c.appendChild(div);
+    });
+
+    // ج) قسم تواصل اجتماعي في بطاقات صفحة اتصل بنا
+    document.querySelectorAll('.contact-info-cards, .contact-info').forEach(c => {
+        if (c.querySelector('.footer-social') || !socialHtml) return;
+        const div = document.createElement('div');
+        div.className = 'footer-social';
+        div.style.cssText = 'display:flex;gap:12px;margin-top:15px;justify-content:center;width:100%;';
+        div.innerHTML = socialHtml;
+        c.appendChild(div);
+    });
 }
 
 // ==========================================
