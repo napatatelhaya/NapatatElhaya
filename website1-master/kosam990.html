@@ -560,6 +560,11 @@
                 updatedAt: serverTimestamp()
             };
             await setDoc(doc(db, 'settings', 'general'), data, { merge: true });
+            // ✅ مزامنة فورية: تحديث التخزين المؤقت حتى تلتقط الصفحات المفتوحة التغييرات عند إعادة التحميل
+            try {
+                const prev = JSON.parse(sessionStorage.getItem('siteSettings') || '{}');
+                sessionStorage.setItem('siteSettings', JSON.stringify({ ...prev, ...data }));
+            } catch (e) { /* تجاهل */ }
             document.getElementById('companyAlert').innerHTML = '<div class="alert alert-success">✅ تم حفظ هوية الشركة واللوجو بنجاح!</div>';
             setTimeout(() => { document.getElementById('companyAlert').innerHTML = ''; }, 3000);
         } catch (err) {

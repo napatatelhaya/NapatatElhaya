@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBB9Jdg4J_onUAR2rFieAAnyf29plxNWVo",
@@ -15,6 +15,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 let allProducts = [];
+
+// ✅ جلب رقم واتساب الرئيسي من لوحة التحكم (Firestore) مع التخزين المؤقت
+let waNumberCached = '201067131398'; // بديل افتراضي
+(async function loadWaNumber() {
+    try {
+        const cached = sessionStorage.getItem('siteSettings');
+        if (cached) {
+            const s = JSON.parse(cached);
+            if (s.whatsappMain) waNumberCached = String(s.whatsappMain).replace(/\D/g, '');
+        }
+        const snap = await getDoc(doc(db, 'settings', 'general'));
+        if (snap.exists() && snap.data().whatsappMain) {
+            waNumberCached = String(snap.data().whatsappMain).replace(/\D/g, '');
+        }
+    } catch (e) { /* استخدام البديل الافتراضي */ }
+})();
 
 document.addEventListener('DOMContentLoaded', async () => {
     const productsContainer = document.querySelector('.products-grid');
@@ -113,7 +129,7 @@ function renderProducts(category, isArabic) {
                     <p class="product-desc">${productDesc}</p>
                     <div class="product-footer">
                         <div class="product-origin">${originText}</div>
-                        <a href="https://wa.me/201067131398?text=${encodeURIComponent(whatsappMsg)}" target="_blank" class="product-link">${linkText}</a>
+                        <a href="https://wa.me/${waNumberCached}?text=${encodeURIComponent(whatsappMsg)}" target="_blank" class="product-link">${linkText}</a>
                     </div>
                 </div>
             </div>

@@ -147,7 +147,9 @@
                     document.getElementById('productCategory').textContent = categories[product.category] || product.category;
                     
                     const whatsappMsg = `I would like to inquire about: ${product.name.en}`;
-                    document.getElementById('whatsappLink').href = `https://wa.me/201096413175?text=${encodeURIComponent(whatsappMsg)}`;
+                    // ✅ Use main WhatsApp number from admin dashboard (set by main.js in dataset) with fallback
+                    const waNum = document.getElementById('whatsappLink').dataset.waNumber || '201096413175';
+                    document.getElementById('whatsappLink').href = `https://wa.me/${waNum}?text=${encodeURIComponent(whatsappMsg)}`;
                     
                     document.title = `${product.name.en} | Nabatat Elhaya`;
                 } else {

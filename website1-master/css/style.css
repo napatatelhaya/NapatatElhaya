@@ -1133,3 +1133,92 @@ html[dir="ltr"] .dropdown-menu li a { text-align: left; }
 html[dir="ltr"] .dropdown-menu li a {
     text-align: left;
 }
+
+/* ==========================================
+   ✅ أيقونات التواصل الاجتماعي العائمة (من لوحة التحكم)
+   ========================================== */
+/* الموضع الافتراضي: يسار (يطابق زر واتساب العائم الموضوع يسارًا في كل المواقع) */
+.social-float-stack {
+    position: fixed;
+    bottom: 100px; /* فوق زر الواتساب مباشرة */
+    left: 30px;
+    right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+}
+
+/* إذا كان زر الواتساب في أي صفحة على اليمين، تنطبق القاعدة التالية تلقائيًا عبر JS (right-aligned class) */
+.social-float-stack.stack-right {
+    left: auto;
+    right: 30px;
+}
+
+.social-float-stack .social-link {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    color: var(--green-dark, #0d3b2e);
+    font-size: 22px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+.social-float-stack .social-link:hover {
+    transform: scale(1.12);
+    color: #fff;
+}
+
+.social-float-stack .social-link.social-facebook:hover,
+.footer-social .social-link.social-facebook:hover { background-color: #1877f2; color: #fff; }
+.social-float-stack .social-link.social-instagram:hover,
+.footer-social .social-link.social-instagram:hover { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+.social-float-stack .social-link.social-linkedin:hover,
+.footer-social .social-link.social-linkedin:hover { background-color: #0a66c2; color: #fff; }
+.social-float-stack .social-link svg,
+.footer-social .social-link svg { display: block; width: 20px; height: 20px; }
+
+.footer-social {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.footer-social .social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: inherit;
+    font-size: 18px;
+    text-decoration: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.footer-social .social-link:hover {
+    transform: translateY(-3px);
+    opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+    .social-float-stack {
+        bottom: 90px;
+        left: 20px;
+        gap: 10px;
+    }
+    .social-float-stack .social-link {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+}
